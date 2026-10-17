@@ -48,7 +48,7 @@ Older messages are just so you know what we talked about.
   and keep the chat going (you can ask a question).
   Don't list the corrections in reply, they are shown on their own."""
 
-# max_retries=1 means no retries (0 means "use the default" in the Google SDK)
+# max_retries=1 means only 1 try in total, so a 429 is never retried
 llm = ChatGoogleGenerativeAI(model="gemini-3.5-flash", max_retries=1)
 checker = llm.with_structured_output(CheckResult)
 
