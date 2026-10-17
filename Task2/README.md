@@ -3,7 +3,7 @@
 A small English tutor that runs in the terminal, like Promova, Learna or YayTalk.
 You write a sentence in English. The tutor checks your grammar, explains each
 mistake **in Arabic**, and answers you like a friendly teacher.
-Most tutor apps don't give explanations in Arabic.
+Many tutor apps don't explain mistakes in Arabic.
 
 Built with LangGraph and Gemini (`gemini-3.5-flash`).
 
@@ -73,6 +73,14 @@ You need [uv](https://docs.astral.sh/uv/).
 
 - **429** (daily limit): the chat stops. No retry.
 - **503** (server busy): waits 5 seconds and tries again, up to 3 times.
+
+## Known limitations
+
+- In the fix step, the tutor only checks the sentence. If you also ask a
+  question in the same message, it does not answer it.
+- Mistakes are matched by their exact words, so "I goed" and "he goed"
+  count as two different mistakes.
+- The chat memory is lost when the program stops.
 
 ## Files
 
