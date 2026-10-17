@@ -16,31 +16,42 @@ Built with LangGraph and Gemini (`gemini-3.5-flash`).
    {
      "has_errors": true,
      "errors": [{"wrong": "I goed", "correct": "I went", "explanation_ar": "..."}],
+     "corrected": "Yesterday I went to school.",
      "reply": "Nice! Where did you go?"
    }
    ```
 3. If there are mistakes, `remember` saves the new ones for this chat.
 4. `reply` shows the answer and the corrections. Every 3rd sentence it
-   reminds you of an old mistake.
-5. Type `exit` to stop.
+   reminds you of an old mistake that is not learned yet. The one reminded
+   the least comes first (then the oldest), so every mistake gets its turn.
+5. **Fix step:** after a correction, the tutor asks you to write the sentence again.
+   - `check_retry` asks the model if the new try is correct.
+   - Correct: the mistake is marked **learned**, no more reminders about it.
+   - Wrong: `retry_reply` gives a small hint in Arabic and you try again (max 2 tries).
+     After 2 wrong tries it shows the correct sentence and goes on.
+   - Type `skip` to stop fixing (no model call).
+   - If you make a learned mistake again, it is not learned anymore.
+6. Type `exit` to stop.
 
-Only **1 model call per sentence**. The free plan gives 20 requests a day,
-so that's 20 sentences.
+Only **1 model call per message**. The free plan gives 20 requests a day,
+so that's 20 messages (each try in the fix step is 1 message too).
 
 ## The graph
 
 ```
-        START
-          |
-    check_grammar
-       /      \
-  mistakes   no mistakes
-     |           |
-  remember       |
-       \        /
-         reply
+                  START
+               /         \
+      new sentence        fixing a mistake
+           |                /         \
+     check_grammar       new try      skip
+        /      \            |           |
+  mistakes   no mistakes  check_retry   |
+     |            |           \        /
+  remember        |          retry_reply
+      \          /                |
+         reply                   END
            |
-          END   -> wait for the next sentence
+          END     -> wait for the next message
 ```
 
 ## How to run
