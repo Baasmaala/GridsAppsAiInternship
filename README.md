@@ -78,3 +78,5 @@ You need [uv](https://docs.astral.sh/uv/).
 
 - `main.py`: the chat loop in the terminal
 - `tutor.py`: the state, the nodes and the graph
+- `tests/test_fix_step.py`: tests for the fix step and the reminder, with a fake model
+  (no API key, no requests). Run: `uv run python tests/test_fix_step.py`
