@@ -55,6 +55,7 @@ Older messages are just so you know what we talked about.
 
 - has_errors: true if the last message has mistakes.
 - errors: one item per mistake. explanation_ar must be in Arabic, short and simple.
+  Use correct Modern Standard Arabic (say "غير المنتظم", not "الغير منتظم").
 - reply: 1-2 short sentences in simple English. Answer what the user said
   and keep the chat going (you can ask a question).
   Don't list the corrections in reply, they are shown on their own.
@@ -67,6 +68,7 @@ Check if each mistake from the list is fixed in the new try.
 - still_wrong: the "wrong" text of each mistake that is NOT fixed yet,
   copied exactly from the list. Empty if all are fixed.
 - hint: if something is still wrong, one short hint in Arabic.
+  Use correct Modern Standard Arabic (say "غير المنتظم", not "الغير منتظم").
   Don't give the correct words. Empty if all are fixed."""
 
 # max_retries=1 means only 1 try in total, so a 429 is never retried
