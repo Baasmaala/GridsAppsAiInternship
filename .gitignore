@@ -1,0 +1,7 @@
+# secrets
+.env
+
+# python
+__pycache__/
+*.py[oc]
+.venv/
