@@ -1,6 +1,7 @@
 # Tutor Agent
 
-A small English tutor that runs in the terminal, like Promova, Learna or YayTalk.
+A small English tutor, like Promova, Learna or YayTalk. It runs in the terminal
+and as a web site (Maher).
 You write a sentence in English. The tutor checks your grammar, explains each
 mistake **in Arabic**, and answers you like a friendly teacher.
 Many tutor apps don't explain mistakes in Arabic.
@@ -15,7 +16,8 @@ Built with LangGraph and Gemini (`gemini-3.5-flash`).
    ```json
    {
      "has_errors": true,
-     "errors": [{"wrong": "I goed", "correct": "I went", "explanation_ar": "..."}],
+     "errors": [{"wrong": "I goed", "correct": "I went", "explanation_ar": "...",
+                 "reason_en": "Past of go is irregular."}],
      "corrected": "Yesterday I went to school.",
      "reply": "Nice! Where did you go?"
    }
@@ -95,7 +97,28 @@ The same tutor in the browser, with two panels:
   mistake that is not learned: Maher gives a test sentence, and if you answer
   it right, the mistake is marked learned (no more reminders about it).
 
+- **Maher's face** has 5 moods, with a color and a voice tone for each:
+  neutral (white), correct sentence (light yellow), mistake (light red),
+  fixed it (yellow, very happy), skip (light blue).
+- **Read aloud**: the HEAR buttons use the browser voice (no model call). Your
+  own sentences use the neutral voice. After you fix a mistake, give up or
+  skip, Maher reads the right sentence once by itself.
+- **Fix step in the site**: only the words that are still wrong get a wavy
+  line. Tap one, or press "Ask Maher for a hint": Maher helps without
+  giving the answer.
+- **Practice answers**: Maher checks the point he tested, and also the rest of
+  your answer (spelling, capital letters). Other slips get a short note.
+- A **"Well done · أحسنت" stamp** after every 3 fixed mistakes, and 3 starter
+  ideas on an empty chat.
+- **Ask Maher panel** (big screens): close it to get more room. Hover the tab
+  to peek, click it to open. It opens by itself when you press any "Ask
+  Maher" button. A red dot shows a new answer.
+
 Still 1 model call per chat message and 1 per question to Maher.
+
+What uses a request: each chat message (each fix-step try too), each question
+to Maher, each button under his answers, each practice answer.
+What doesn't: Skip, HEAR, the mic, My mistakes, the hover box, "I'm done".
 
 - `api/main.py`: a small FastAPI app.
   - `POST /chat` (`{"thread_id": "...", "sentence": "..."}`): the tutor.
@@ -143,7 +166,8 @@ questions about the past, "an", has/have, doesn't, and "give me a test"
   question in the same message, it does not answer it.
 - Mistakes are matched by their exact words, so "I goed" and "he goed"
   count as two different mistakes.
-- The chat memory is lost when the program stops.
+- The chat memory is lost when the program stops. In the site the page still
+  shows the old chat, so press "New chat" after you restart the API.
 - The chat and Ask Maher use the same free quota (20 requests a day).
 
 ## Files
