@@ -8,3 +8,7 @@ __pycache__/
 
 # screenshots
 ss/
+
+# web
+node_modules/
+web/dist/

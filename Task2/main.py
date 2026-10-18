@@ -6,11 +6,11 @@ from langchain_google_genai.chat_models import (
     GoogleRateLimitError,
 )
 
-from tutor import build_graph
+from tutor import FAKE, build_graph
 
 
 def main():
-    if not os.getenv("GOOGLE_API_KEY"):
+    if not FAKE and not os.getenv("GOOGLE_API_KEY"):
         print("No GOOGLE_API_KEY found. Put it in the .env file.")
         return
 

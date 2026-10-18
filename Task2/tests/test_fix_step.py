@@ -23,8 +23,14 @@ class Fake:
         return self.answers.pop(0)
 
 
-goed = Mistake(wrong="I goed", correct="I went", explanation_ar="ماضي go هو went")
-buyed = Mistake(wrong="buyed", correct="bought", explanation_ar="ماضي buy هو bought")
+goed = Mistake(wrong="I goed", correct="I went", explanation_ar="ماضي go هو went",
+               reason_en="Past of go is irregular.")
+buyed = Mistake(wrong="buyed", correct="bought", explanation_ar="ماضي buy هو bought",
+                reason_en="Past of buy is irregular.")
+
+
+def retry(**fields):
+    return RetryResult(new_errors=[], corrected="", **fields)
 
 
 def wrong(mistake, corrected):
@@ -57,8 +63,8 @@ def learned(state):
 def test_fixed_on_second_try():
     send = start(
         [wrong(goed, "Yesterday I went to school.")],
-        [RetryResult(still_wrong=["I goed"], hint="فكر في الماضي"),
-         RetryResult(still_wrong=[], hint="")],
+        [retry(still_wrong=["I goed"], hint="فكر في الماضي"),
+         retry(still_wrong=[], hint="")],
     )
     s = send("Yesterday I goed to school.")
     assert "Try again" in s["answer"] and s["calls"] == 1
@@ -76,8 +82,8 @@ def test_fixed_on_second_try():
 def test_wrong_two_times():
     send = start(
         [wrong(goed, "Yesterday I went to school.")],
-        [RetryResult(still_wrong=["I goed"], hint="h1"),
-         RetryResult(still_wrong=["I goed"], hint="h2")],
+        [retry(still_wrong=["I goed"], hint="h1"),
+         retry(still_wrong=["I goed"], hint="h2")],
     )
     send("Yesterday I goed to school.")
     send("Yesterday I go to school.")
@@ -97,7 +103,7 @@ def test_skip_needs_no_model_call():
 def test_reminder_skips_learned():
     send = start(
         [wrong(goed, "I went."), wrong(buyed, "I bought it."), ok()],
-        [RetryResult(still_wrong=[], hint="")],
+        [retry(still_wrong=[], hint="")],
     )
     send("I goed.")
     send("I went.")  # fixed -> learned
@@ -127,13 +133,20 @@ def test_reminder_takes_turns():
 def test_learned_mistake_made_again():
     send = start(
         [wrong(goed, "I went."), wrong(goed, "I went home.")],
-        [RetryResult(still_wrong=[], hint="")],
+        [retry(still_wrong=[], hint="")],
     )
     send("I goed.")
     s = send("I went.")
     assert learned(s) == {"I goed": True}
     s = send("I goed home.")
     assert learned(s) == {"I goed": False}
+
+
+def test_model_fields_required():
+    # Gemini skips optional fields
+    for model in (Mistake, CheckResult, RetryResult):
+        schema = model.model_json_schema()
+        assert set(schema["required"]) == set(schema["properties"]), model.__name__
 
 
 if __name__ == "__main__":
