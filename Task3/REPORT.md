@@ -226,21 +226,26 @@ What the tests prove, beyond the brief's challenges:
 
 ## 6. How I used AI in my work
 
-### Where AI helped
--
--
+I worked with an AI coding assistant the way the workshop recommends on page 5: as a helper that I direct and check, not as something I copy from.
 
-### What I checked myself
--
--
+**My role**
+- I broke the project into 7 phases and decided what each phase must deliver.
+- I reviewed every plan before any code was written, and I approved it, changed it, or asked questions.
+- The assistant wrote most of the code and tests. I ran it, read the results, and decided what to keep.
 
-### What I changed after review
--
--
+**Decisions I made after review**
+- From the web app, a lesson can only be saved from the Review Inbox, one lesson at a time, by a person. A name typed for a whole run does not count as a decision.
+- The parity check must compare every status between Python and Node, not only dry runs.
+- The audit log must also catch lines deleted from the end of the file.
+- Ask Masar must be tested against prompt injection: a lesson that tells it to approve itself.
+- I rejected the first 3 icons because they looked like the letter P, and chose the joined form of م from the start of مسار.
 
-### What I did not let it do
--
--
+**What I tested myself**
+- I used the app as a real user, and found 2 bugs the automatic tests missed: an Arabic question got an English answer, and a dry run answer said a lesson was in the inbox when nothing had been saved. Both are now fixed and have tests.
+
+**Limits I kept**
+- Nothing was pushed to GitHub without my OK.
+- No step can save a lesson without a human approval.
 
 ## 7. What I would build next
 

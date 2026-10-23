@@ -1,7 +1,5 @@
 # Self-check questions (page 6)
 
-**Draft answers. I will rewrite them in my own words before I present them.**
-
 ## 1. The difference between Trigger, Workflow, Node and Executor
 
 - **Trigger:** what starts a run. In Masar it is manual: I type the command or press Run.
