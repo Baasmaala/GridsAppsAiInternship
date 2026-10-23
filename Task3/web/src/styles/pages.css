@@ -205,3 +205,31 @@
 .diff-one .diff-row { grid-template-columns: minmax(90px, 0.3fr) minmax(0, 1fr); }
 .diff-note { color: var(--muted); font-size: 13px; }
 .diff-note span { grid-column: 1 / -1; }
+
+/* ---------- ask masar: a notes column on the inline-end side ---------- */
+
+.ask-button[aria-expanded="true"] { border-color: var(--ink); }
+.ask {
+  position: fixed; inset-block: 0; inset-inline-end: 0; z-index: 20; width: min(400px, 100%);
+  background: var(--card); border-inline-start: 1px solid var(--rule);
+  display: grid; grid-template-rows: auto auto 1fr auto;
+}
+.ask-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 14px 16px; border-bottom: 1px solid var(--rule); }
+.ask-head h2 { font-size: 17px; }
+.ask-close { padding: 4px 10px; }
+.ask-looking { padding: 10px 16px; font-size: 13.5px; border-bottom: 1px solid var(--rule); background: var(--paper); }
+.ask-notes { overflow-y: auto; padding: 4px 16px 12px; }
+.ask-try { padding-top: 12px; display: grid; gap: 8px; }
+.ask-example {
+  background: none; border: 0; padding: 4px 0; cursor: pointer; text-align: start; font-size: 14px;
+  color: var(--route); text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 3px;
+}
+.ask-example:hover { text-decoration-color: var(--route); }
+.ask-note { padding: 14px 0; border-bottom: 1px solid var(--rule); display: grid; gap: 6px; }
+.ask-q { font-weight: 600; }
+.ask-a { white-space: pre-wrap; }
+.ask-src { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+.ask-form { padding: 12px 16px 16px; border-top: 1px solid var(--rule); display: grid; gap: 10px; }
+.ask-form .btn { justify-self: start; }
+.ask-rule { font-size: 12.5px; }
+@media (max-width: 720px) { .ask { width: 100%; border: 0; } }

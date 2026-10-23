@@ -15,7 +15,7 @@ export const PAGES: { id: PageId; label: Key; ready: boolean }[] = [
   { id: 'lab', label: 'nav.lab', ready: true },
 ];
 
-export function Header({ page }: { page: PageId }) {
+export function Header({ page, onAsk, asking }: { page: PageId; onAsk: () => void; asking: boolean }) {
   const { t, toggle, lang } = useLang();
   return (
     <header className="header">
@@ -34,6 +34,9 @@ export function Header({ page }: { page: PageId }) {
             ),
           )}
         </nav>
+        <button type="button" className="lang-switch ask-button" onClick={onAsk} aria-expanded={asking}>
+          {t('ask.button')}
+        </button>
         <button type="button" className="lang-switch" onClick={toggle} lang={lang === 'en' ? 'ar' : 'en'}>
           {t('lang.switch')}
         </button>

@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
+import { AskPanel } from './components/AskPanel';
 import { Header, PAGES, type PageId } from './components/Header';
 import { LangProvider } from './i18n/lang';
-import { LastRunProvider } from './lib/lastRun';
+import { askContext } from './lib/ask';
+import { LastRunProvider, useLastRun } from './lib/lastRun';
 import { parseHash } from './lib/route';
 import { AuditPage } from './pages/AuditPage';
 import { DraftsPage } from './pages/DraftsPage';
@@ -21,7 +23,20 @@ function current(): { page: PageId; params: URLSearchParams } {
 }
 
 export function App() {
+  return (
+    <LangProvider>
+      <LastRunProvider>
+        <Shell />
+      </LastRunProvider>
+    </LangProvider>
+  );
+}
+
+function Shell() {
   const [route, setRoute] = useState(current);
+  const [asking, setAsking] = useState(false);
+  const { last } = useLastRun();
+  const closeAsk = useCallback(() => setAsking(false), []);
 
   useEffect(() => {
     const onHash = () => {
@@ -33,18 +48,17 @@ export function App() {
   }, []);
 
   return (
-    <LangProvider>
-      <LastRunProvider>
-        <Header page={route.page} />
-        {route.page === 'overview' && <OverviewPage />}
-        {route.page === 'workflow' && <WorkflowPage />}
-        {route.page === 'run' && <RunStudioPage />}
-        {route.page === 'replay' && <ReplayPage params={route.params} />}
-        {route.page === 'inbox' && <InboxPage />}
-        {route.page === 'drafts' && <DraftsPage />}
-        {route.page === 'audit' && <AuditPage />}
-        {route.page === 'lab' && <LabPage />}
-      </LastRunProvider>
-    </LangProvider>
+    <>
+      <Header page={route.page} onAsk={() => setAsking(a => !a)} asking={asking} />
+      {route.page === 'overview' && <OverviewPage />}
+      {route.page === 'workflow' && <WorkflowPage />}
+      {route.page === 'run' && <RunStudioPage />}
+      {route.page === 'replay' && <ReplayPage params={route.params} />}
+      {route.page === 'inbox' && <InboxPage />}
+      {route.page === 'drafts' && <DraftsPage />}
+      {route.page === 'audit' && <AuditPage />}
+      {route.page === 'lab' && <LabPage />}
+      <AskPanel open={asking} onClose={closeAsk} context={askContext(route.page, route.params, last)} />
+    </>
   );
 }

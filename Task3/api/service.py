@@ -14,6 +14,9 @@ from masar.engine.runs import list_runs, load_run
 from masar.engine.storage import atomic_json_write, read_store
 from tools.challenges import run_challenges
 
+from .assistant import chat as assistant
+from .assistant.context import ContextError
+
 WORKFLOWS = ROOT / "masar" / "workflows"
 SAMPLES = ROOT / "masar" / "samples"
 NAME = re.compile(r"[a-z0-9_-]{1,40}")
@@ -195,6 +198,18 @@ class Service:
 
     def verify(self):
         return verify_audit(self.audit_file, self.runs)
+
+    # ask masar. read only: no lock, no write function is passed in.
+
+    def chat(self, question, lang, run_id=None, source_id=None, index=None, item=None, workflow=None):
+        if not question.strip():
+            raise BadInput("write a question")
+        raw = self._raw_workflow(workflow or "dorosak_lessons") if item is not None else None
+        try:
+            return assistant.answer(question, lang, runs_dir=self.runs, run_id=run_id, source_id=source_id,
+                                    index=index, item=item, workflow=raw)
+        except ContextError as ex:
+            raise BadInput(str(ex)) from None
 
     # lab and demo
 

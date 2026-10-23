@@ -3,7 +3,7 @@ import { createContext, useContext, useState, type ReactNode } from 'react';
 import type { Report, WorkflowNode } from '../api/client';
 
 // a dry run is never saved by the backend, so Replay gets the last one from here (memory only)
-type LastRun = { report: Report; nodes: WorkflowNode[] } | null;
+type LastRun = { report: Report; nodes: WorkflowNode[]; workflowKey: string } | null;
 
 const Ctx = createContext<{ last: LastRun; setLast: (r: LastRun) => void } | null>(null);
 

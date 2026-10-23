@@ -35,7 +35,7 @@ export function RunStudioPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<ApiError | null>(null);
   const [note, setNote] = useState<string | null>(null);
-  const [result, setResult] = useState<{ report: Report; nodes: WorkflowNode[] } | null>(null);
+  const [result, setResult] = useState<{ report: Report; nodes: WorkflowNode[]; workflowKey: string } | null>(null);
   const [tick, setTick] = useState(0);
   const timer = useRef<number | undefined>(undefined);
 
@@ -65,7 +65,7 @@ export function RunStudioPage() {
       const detail = await api.workflow(wfKey);
       const report = await api.run({ workflow: wfKey, sample, dry_run: dry,
         ...(dry && previewAs.trim() ? { approved_by: previewAs } : {}) });
-      const next = { report, nodes: detail.nodes ?? [] };
+      const next = { report, nodes: detail.nodes ?? [], workflowKey: wfKey };
       setResult(next);
       if (dry) setLast(next);
       play(report);

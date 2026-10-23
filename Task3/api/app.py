@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse
 from masar.cli import OUTPUT_DIR
 from masar.engine.errors import ResumeError, StoreError, WorkflowError
 
-from .schemas import DecisionRequest, ResetRequest, RunRequest
+from .schemas import ChatRequest, DecisionRequest, ResetRequest, RunRequest
 from .service import UPLOAD_MAX_BYTES, BadInput, NotFound, Service
 
 ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
@@ -97,6 +97,10 @@ def create_app(output_dir=None):
     def challenges():
         results = svc.challenges()
         return {"passed": sum(r["passed"] for r in results), "total": len(results), "results": results}
+
+    @app.post("/api/ask")
+    def chat(req: ChatRequest):
+        return svc.chat(req.question, req.lang, req.run_id, req.source_id, req.index, req.item, req.workflow)
 
     @app.post("/api/demo/reset")
     def reset(req: ResetRequest):

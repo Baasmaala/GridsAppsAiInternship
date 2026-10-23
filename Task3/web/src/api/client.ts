@@ -1,5 +1,7 @@
 // small fetch helpers. vite passes /api to the backend on 127.0.0.1:8001.
 
+import type { AskSource, ChatBody } from '../lib/ask';
+
 export type WorkflowNode = { id: string; type: string };
 
 export type WorkflowSummary = { key: string; id: string | null; ok: boolean; errors: string[] };
@@ -156,6 +158,7 @@ export const api = {
   audit: () => call<AuditLine[]>('/api/audit'),
   verify: () => call<Verify>('/api/audit/verify'),
   challenges: () => post<{ passed: number; total: number; results: Challenge[] }>('/api/challenges/run'),
+  chat: (body: ChatBody) => post<{ answer: string; source: AskSource; kind: string }>('/api/ask', body),
   reset: (seed: boolean) =>
     post<{ cleared: boolean; seeded: { run_id: string; summary: Record<string, number> } | null }>(
       '/api/demo/reset', { confirm: 'reset', seed }),
