@@ -168,7 +168,7 @@ describe('engine behaviour', () => {
       const wf = baseWorkflow();
       wf.nodes.splice(2, 0, { id: 'boom', type: 'boom' });
       wf.edges = wf.nodes.slice(1).map((n, i) => [wf.nodes[i].id, n.id]);
-      const r = runWorkflow(['L1', 'L2', 'L3'].map(s => lesson({ source_id: s })),
+      const r = runWorkflow(['L1', 'L2', 'L3'].map(s => lesson({ source_id: s, title: `Lesson ${s}` })),
         { store, approvedBy: 'Trainer', workflow: wf });
       assert.deepEqual(r.items.map(i => i.status), ['draft_saved', 'failed_error', 'draft_saved']);
       assert.equal(r.items[1].error, 'RangeError: something broke');
@@ -188,7 +188,7 @@ describe('engine behaviour', () => {
     const before = folderHashes(dir);
     const rename = mock.method(fs, 'renameSync', () => { throw new Error('disk full'); });
     try {
-      assert.throws(() => runWorkflow([lesson({ source_id: 'L2' })], { store, approvedBy: 'Trainer' }), /disk full/);
+      assert.throws(() => runWorkflow([lesson({ source_id: 'L2', title: 'Other' })], { store, approvedBy: 'Trainer' }), /disk full/);
     } finally {
       rename.mock.restore();
     }
@@ -214,8 +214,8 @@ describe('engine behaviour', () => {
   }));
 
   test('keeps drafts already saved', sandbox(({ store, drafts }) => {
-    runWorkflow([lesson({ source_id: 'OLD' })], { store, approvedBy: 'Ali' });
-    runWorkflow([lesson({ source_id: 'NEW' })], { store, approvedBy: 'Mona' });
+    runWorkflow([lesson({ source_id: 'OLD', title: 'Old one' })], { store, approvedBy: 'Ali' });
+    runWorkflow([lesson({ source_id: 'NEW', title: 'New one' })], { store, approvedBy: 'Mona' });
     assert.deepEqual(drafts().map(d => [d.source_id, d.reviewed_by]), [['OLD', 'Ali'], ['NEW', 'Mona']]);
   }));
 });

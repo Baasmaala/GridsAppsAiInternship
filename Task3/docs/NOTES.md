@@ -101,6 +101,17 @@ error text says what broke, for example `RuntimeError: something broke`.
 The starter would call both `failed_validation`, which hides real bugs as bad input.
 The Node engine uses `failed_error` too (done in phase 2).
 
+**Statuses I added in phase 3:**
+- `possible_duplicate`: the `source_id` is new, but the title (or question) looks the same
+  as a saved draft or an earlier one in the input. Not skipped: it waits at approval. Even
+  an approved run does not save it. Someone must approve that one lesson by name
+  (`resume --item`). The draft then keeps `possible_duplicate_of: <old id>` as a link.
+- `rejected`: a reviewer said no in a resume, with a reason. Nothing is saved.
+
+All statuses now: `dry_run_preview`, `review_pending`, `possible_duplicate`, `draft_saved`,
+`skipped_duplicate`, `rejected`, `failed_validation`, `failed_error` (+ the starter's
+`complete`, which our workflows never reach).
+
 Other changes (all have tests):
 - **Same `source_id` twice in one input:** the second copy is `skipped_duplicate` in
   every mode (dry run, review, approved). The starter catches it only in an approved run.
@@ -116,6 +127,34 @@ Other changes (all have tests):
 - **The linter refuses a workflow** with no `manual_approval` or no `check_duplicate`
   before `save_draft`. So a workflow file cannot skip the human.
 - **Reading JSON accepts a BOM**, because PowerShell often saves files with one.
+
+Phase 3 (Python engine):
+- **A review run now writes to `output/`**: `runs/<run_id>.json` (the state, so it can be
+  resumed) and lines in `audit.jsonl`. It never writes or changes the drafts file. A test
+  checks the drafts file is byte for byte the same. The brief's "does it save? No" is still
+  true for content. A dry run still writes nothing at all.
+- **Resume starts again at the duplicate check**, not at approval, because another run
+  could have saved the same lesson while this one was waiting.
+- **Retry:** only `TransientError` is retried, after 1s, 2s, 4s (max 3 retries). A
+  `retry_after` is used when given. If it is more than 30s, the engine stops at once with
+  `failed_error` ("gave up: retry after 13h ..."), it does not wait or hammer.
+  `ValidationError` and bugs are never retried. Every attempt is in the trace.
+- **Audit lines are small:** time, event, run id, workflow id, source id, status, reviewer,
+  reason, duplicate_of, seq and the two hashes. No lesson text.
+- **A cut at the end is caught too.** Each run file saves the audit head (the last hash
+  and the line count) when the run, or a resume, ends. `verify-audit` checks that the
+  chain still reaches the head of the newest run file. So deleting the last lines gives
+  "BROKEN after line N: ... lines were cut from the end", and a deleted audit file is
+  caught as well. It is missed only if the run files are deleted (or changed) too. A
+  real system would keep the head somewhere people cannot edit (a database, a signed
+  receipt). Written in LIMITATIONS later.
+- **Question bank** has 2 new nodes, `validate_question` and `normalize_question` (PLAN.md
+  only named the first; without the second, extra fields from the input would be saved).
+  The executor did not change for it.
+- **One drafts file per workflow:** the lessons workflow keeps `python_drafts.json` (the
+  brief's name). Others get `python_<workflow id>_drafts.json`, so questions and lessons
+  do not mix. Runs and the audit file are shared in `output/`.
+- **New linter rule:** `check_duplicate` and `save_draft` need a validate node before them.
 
 ## 8. Decisions (23 Oct 2026)
 
@@ -133,8 +172,15 @@ The starter first came as `Task3/Starter/` (capital S). It is now `starter/`, li
 ## 10. Python vs Node
 
 Both masar engines read the same `masar/workflows/` and `masar/samples/` files.
-`tools/parity_check.py` runs both CLIs on 5 cases (dry run, bad input, already saved,
-no reviewer, approved twice) and compares the status of every lesson.
+`tools/parity_check.py` runs both CLIs on 7 cases (dry run, bad input, already saved,
+no reviewer, approved twice, question bank, similar English and Arabic titles) and
+compares the status of every lesson.
+
+**What is only in the Python engine (decided in phase 3):** run files, `runs`, `resume`,
+reject, retry with backoff, and the audit chain with `verify-audit`. Only the backend uses
+them, and the backend is Python. The Node engine has every node and linter rule, so it
+runs every workflow file and gives the same statuses, but a Node review run saves no
+state and writes no audit line.
 
 Small differences I know about. None of them changes a status in our samples:
 - **Time format:** Python writes `2026-10-23T11:38:31.849318+00:00`, Node writes

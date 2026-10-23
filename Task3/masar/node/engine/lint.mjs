@@ -9,14 +9,17 @@ const TRIGGERS = new Set(['manual']);
 const CODE_KEYS = new Set(['code', 'script', 'exec', 'eval', 'command', 'cmd', 'shell', 'function',
   'python', 'javascript', 'js', 'module', 'import', 'run']);
 
-// node type -> types that must come before it
+const VALIDATORS = ['validate_lesson', 'validate_question'];
+// node type -> [one of these must come before it, message]
 const NEEDS_BEFORE = {
-  normalize_lesson: ['validate_lesson'],
-  save_draft: ['check_duplicate', 'manual_approval'],
-};
-const NEED_MESSAGES = {
-  'save_draft|manual_approval':
-    'save_draft needs a manual_approval node before it (no human approval, no save)',
+  normalize_lesson: [[['validate_lesson'], 'normalize_lesson needs a validate_lesson node before it']],
+  normalize_question: [[['validate_question'], 'normalize_question needs a validate_question node before it']],
+  check_duplicate: [[VALIDATORS, 'check_duplicate needs a validate node before it']],
+  save_draft: [
+    [VALIDATORS, 'save_draft needs a validate node before it (nothing unchecked is saved)'],
+    [['check_duplicate'], 'save_draft needs a check_duplicate node before it'],
+    [['manual_approval'], 'save_draft needs a manual_approval node before it (no human approval, no save)'],
+  ],
 };
 
 // like python repr, so messages read the same in both engines
@@ -165,11 +168,8 @@ function findCycle(next) {
 function orderErrors(types) {
   const errors = [];
   types.forEach((type, i) => {
-    for (const need of NEEDS_BEFORE[type] ?? []) {
-      if (!types.slice(0, i).includes(need)) {
-        const msg = NEED_MESSAGES[`${type}|${need}`] ?? `${type} needs a ${need} node before it`;
-        if (!errors.includes(msg)) errors.push(msg);
-      }
+    for (const [anyOf, msg] of NEEDS_BEFORE[type] ?? []) {
+      if (!anyOf.some(t => types.slice(0, i).includes(t)) && !errors.includes(msg)) errors.push(msg);
     }
   });
   return errors;

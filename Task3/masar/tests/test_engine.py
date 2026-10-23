@@ -50,7 +50,7 @@ class BriefChallenges(TempStore):
         r = self.run_wf([lesson()])
         self.assertEqual(r["items"][0]["status"], "review_pending")
         self.assertEqual(r["mode"], "review")
-        self.assertFalse(self.dir.exists())
+        self.assertFalse(self.store.exists())
 
     def test_4_dry_run_changes_nothing_in_output(self):
         self.run_wf(GOOD[:2], approved_by="Trainer")
@@ -179,7 +179,7 @@ class EngineBehaviour(TempStore):
         wf["nodes"].insert(2, {"id": "boom", "type": "boom"})
         wf["edges"] = [[a["id"], b["id"]] for a, b in zip(wf["nodes"], wf["nodes"][1:])]
         with mock.patch.dict(registry.NODES, {"boom": boom}):
-            r = self.run_wf([lesson(source_id=s) for s in ("L1", "L2", "L3")],
+            r = self.run_wf([lesson(source_id=s, title=f"Lesson {s}") for s in ("L1", "L2", "L3")],
                             approved_by="Trainer", workflow=wf)
         self.assertEqual([i["status"] for i in r["items"]],
                          ["draft_saved", "failed_error", "draft_saved"])
@@ -188,14 +188,17 @@ class EngineBehaviour(TempStore):
 
     def test_no_temp_file_left_after_save(self):
         self.run_wf([lesson()], approved_by="Trainer")
-        self.assertEqual([p.name for p in self.dir.iterdir()], ["python_drafts.json"])
+        self.assertEqual(sorted(p.name for p in self.dir.iterdir()),
+                         ["audit.jsonl", "python_drafts.json", "runs"])
+        self.assertEqual([p.suffix for p in (self.dir / "runs").iterdir()], [".json"])
+        self.assertFalse(list(self.dir.rglob(".tmp-*")))
 
     def test_failed_write_keeps_old_file(self):
         self.run_wf([lesson()], approved_by="Trainer")
         before = folder_hashes(self.dir)
         with mock.patch("masar.engine.storage.os.replace", side_effect=OSError("disk full")):
             with self.assertRaises(OSError):
-                self.run_wf([lesson(source_id="L2")], approved_by="Trainer")
+                self.run_wf([lesson(source_id="L2", title="Other")], approved_by="Trainer")
         self.assertEqual(folder_hashes(self.dir), before)
 
     def test_file_not_rewritten_when_nothing_new(self):
@@ -212,8 +215,8 @@ class EngineBehaviour(TempStore):
             self.run_wf([lesson()], approved_by="Trainer")
 
     def test_keeps_drafts_already_saved(self):
-        self.run_wf([lesson(source_id="OLD")], approved_by="Ali")
-        self.run_wf([lesson(source_id="NEW")], approved_by="Mona")
+        self.run_wf([lesson(source_id="OLD", title="Old one")], approved_by="Ali")
+        self.run_wf([lesson(source_id="NEW", title="New one")], approved_by="Mona")
         self.assertEqual([(d["source_id"], d["reviewed_by"]) for d in self.drafts()],
                          [("OLD", "Ali"), ("NEW", "Mona")])
 

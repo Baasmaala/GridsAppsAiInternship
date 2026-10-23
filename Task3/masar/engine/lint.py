@@ -9,14 +9,19 @@ TRIGGERS = {"manual"}
 CODE_KEYS = {"code", "script", "exec", "eval", "command", "cmd", "shell", "function",
              "python", "javascript", "js", "module", "import", "run"}
 
-# node type -> types that must come before it
+VALIDATORS = ("validate_lesson", "validate_question")
+# node type -> (one of these must come before it, message)
 NEEDS_BEFORE = {
-    "normalize_lesson": ["validate_lesson"],
-    "save_draft": ["check_duplicate", "manual_approval"],
-}
-NEED_MESSAGES = {
-    ("save_draft", "manual_approval"):
-        "save_draft needs a manual_approval node before it (no human approval, no save)",
+    "normalize_lesson": [(("validate_lesson",), "normalize_lesson needs a validate_lesson node before it")],
+    "normalize_question": [(("validate_question",),
+                            "normalize_question needs a validate_question node before it")],
+    "check_duplicate": [(VALIDATORS, "check_duplicate needs a validate node before it")],
+    "save_draft": [
+        (VALIDATORS, "save_draft needs a validate node before it (nothing unchecked is saved)"),
+        (("check_duplicate",), "save_draft needs a check_duplicate node before it"),
+        (("manual_approval",), "save_draft needs a manual_approval node before it "
+                               "(no human approval, no save)"),
+    ],
 }
 
 
@@ -162,9 +167,7 @@ def _find_cycle(nxt):
 def _order_errors(types):
     errors = []
     for i, node_type in enumerate(types):
-        for need in NEEDS_BEFORE.get(node_type, []):
-            if need not in types[:i]:
-                msg = NEED_MESSAGES.get((node_type, need), f"{node_type} needs a {need} node before it")
-                if msg not in errors:
-                    errors.append(msg)
+        for any_of, msg in NEEDS_BEFORE.get(node_type, []):
+            if not any(t in types[:i] for t in any_of) and msg not in errors:
+                errors.append(msg)
     return errors

@@ -1,0 +1,12 @@
+[
+  {"source_id": "TC-Q-001", "question": "Choose the right word: She ___ to school every day.", "options": ["go", "goes", "going", "gone"], "answer": 1, "level": "A1", "topic": "Present simple"},
+  {"source_id": "TC-Q-002", "question": "  What is the past of 'buy'?  ", "options": [" bought ", "buyed", "brought", "buys"], "answer": 0, "level": " a2 ", "topic": "  Irregular   verbs "},
+  {"source_id": "TC-Q-003", "question": "Pick the plural of 'child'.", "options": ["childs", "children", "childes"], "answer": 1, "level": "A1", "topic": "Plurals"},
+  {"source_id": "TC-Q-004", "question": "Which one is a color?", "options": ["red", "Red", "table", "run"], "answer": 0, "level": "A1", "topic": "Vocabulary"},
+  {"source_id": "TC-Q-005", "question": "Choose the article: ___ apple.", "options": ["a", "an", "the", "no article"], "answer": 4, "level": "A1", "topic": "Articles"},
+  {"source_id": "TC-Q-006", "question": "Is this sentence correct? 'He don't like tea.'", "options": ["yes", "no", "maybe", "both"], "answer": true, "level": "A2", "topic": "Grammar"},
+  {"source_id": "TC-Q-007", "question": "Choose the opposite of 'hot'.", "options": ["cold", "", "warm", "cool"], "answer": 0, "level": "A1", "topic": "Opposites"},
+  {"source_id": "TC-Q-008", "question": "Choose the right preposition: on Monday / in Monday", "options": ["on", "in", "at", "by"], "answer": 0, "level": "A2"},
+  {"source_id": "TC-Q-009", "question": "choose the right word - she ___ to school every day", "options": ["go", "goes", "going", "gone"], "answer": 1, "level": "A1", "topic": "Present simple"},
+  {"source_id": "TC-Q-001", "question": "Choose the right word: She ___ to school every day.", "options": ["go", "goes", "going", "gone"], "answer": 1, "level": "A1", "topic": "Present simple"}
+]

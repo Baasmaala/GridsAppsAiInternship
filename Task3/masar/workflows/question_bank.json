@@ -1,0 +1,20 @@
+{
+  "id": "question-bank",
+  "version": "1.0.0",
+  "trigger": {"type": "manual"},
+  "nodes": [
+    {"id": "validate", "type": "validate_question"},
+    {"id": "normalize", "type": "normalize_question"},
+    {"id": "deduplicate", "type": "check_duplicate"},
+    {"id": "approval", "type": "manual_approval"},
+    {"id": "persist", "type": "save_draft"},
+    {"id": "audit", "type": "log_result"}
+  ],
+  "edges": [
+    ["validate", "normalize"],
+    ["normalize", "deduplicate"],
+    ["deduplicate", "approval"],
+    ["approval", "persist"],
+    ["persist", "audit"]
+  ]
+}

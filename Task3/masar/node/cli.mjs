@@ -9,12 +9,18 @@ import { loadWorkflow, readJson, toMermaid } from './engine/loader.mjs';
 
 const OUTPUT_DIR = path.join(ROOT, 'output');
 const DEFAULT_INPUT = path.join(ROOT, 'masar', 'samples', 'lessons_good.json');
-const DEFAULT_STORE = path.join(OUTPUT_DIR, 'node_drafts.json');
+const LESSONS_ID = 'dorosak-content-intake';
+
+// the lessons workflow keeps the brief's file name, other workflows get their own file
+function defaultStore(workflowId) {
+  if (workflowId === LESSONS_ID) return path.join(OUTPUT_DIR, 'node_drafts.json');
+  return path.join(OUTPUT_DIR, `node_${workflowId.replace(/[^A-Za-z0-9_-]/g, '_')}_drafts.json`);
+}
 
 const OPTIONS = {
   workflow: { type: 'string', default: DEFAULT_WORKFLOW },
   input: { type: 'string', default: DEFAULT_INPUT },
-  store: { type: 'string', default: DEFAULT_STORE },
+  store: { type: 'string' },
   'approved-by': { type: 'string', default: '' },
   'dry-run': { type: 'boolean', default: false },
   lint: { type: 'boolean', default: false },
@@ -30,7 +36,7 @@ Masar: Dorosak lesson intake, local sandbox only
 
   --workflow FILE      workflow file (default masar/workflows/dorosak_lessons.json)
   --input FILE         lessons file (default masar/samples/lessons_good.json)
-  --store FILE         drafts file (default output/node_drafts.json)
+  --store FILE         drafts file (default depends on the workflow)
   --approved-by NAME   test reviewer name, not a real login
   --dry-run            run everything, save nothing
   --lint               only check the workflow file
@@ -76,8 +82,9 @@ function main(argv) {
     return 0;
   }
 
+  const store = args.store ?? defaultStore(wf.id);
   const html = args['report-html'];
-  if (args['dry-run'] && html && (inside(html, OUTPUT_DIR) || inside(html, path.dirname(args.store)))) {
+  if (args['dry-run'] && html && (inside(html, OUTPUT_DIR) || inside(html, path.dirname(store)))) {
     return fail('dry run never writes in the output folder. pick another path for --report-html');
   }
 
@@ -92,7 +99,7 @@ function main(argv) {
   let report;
   try {
     report = runWorkflow(lessons, { approvedBy: args['approved-by'], dryRun: args['dry-run'],
-      store: args.store, workflow: wf });
+      store, workflow: wf });
   } catch (ex) {
     if (ex instanceof StoreError) return fail(ex.message);
     throw ex;

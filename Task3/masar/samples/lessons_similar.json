@@ -1,0 +1,11 @@
+[
+  {"source_id": "DOR-SIM-001", "title": "Greetings and Introductions", "category": "75 Daily Conversations", "level": "A1", "language": "en", "body": "Hello! My name is Sara."},
+  {"source_id": "DOR-SIM-002", "title": "greetings, and  INTRODUCTIONS!", "category": "75 Daily Conversations", "level": "A1", "language": "en", "body": "Hi, I am Omar."},
+  {"source_id": "DOR-SIM-003", "title": "التحيات والتعارف", "category": "محادثات يومية", "level": "A1", "language": "ar", "body": "مرحبا اسمي سارة"},
+  {"source_id": "DOR-SIM-004", "title": "التَّحِيّـات والتعارُف", "category": "محادثات يومية", "level": "A1", "language": "ar", "body": "أهلا أنا عمر"},
+  {"source_id": "DOR-SIM-005", "title": "مكتبة المدرسة", "category": "المدرسة", "level": "A2", "language": "ar", "body": "في المدرسة مكتبة كبيرة"},
+  {"source_id": "DOR-SIM-006", "title": "مكتبه المدرسه", "category": "المدرسة", "level": "A2", "language": "ar", "body": "أحب القراءة في المكتبة"},
+  {"source_id": "DOR-SIM-007", "title": "إلى السوق", "category": "التسوق", "level": "A2", "language": "ar", "body": "نذهب إلى السوق يوم الجمعة"},
+  {"source_id": "DOR-SIM-008", "title": "الي السوق", "category": "التسوق", "level": "A2", "language": "ar", "body": "أشتري الخبز من السوق"},
+  {"source_id": "DOR-SIM-009", "title": "Asking for Directions", "category": "75 Daily Conversations", "level": "A2", "language": "en", "body": "Where is the station?"}
+]

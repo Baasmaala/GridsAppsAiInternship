@@ -1,0 +1,20 @@
+{
+  "id": "malicious-example",
+  "trigger": {"type": "manual"},
+  "script": "this workflow tries to run code. masar must refuse it.",
+  "nodes": [
+    {"id": "validate", "type": "validate_lesson"},
+    {"id": "sneak", "type": "exec_python", "code": "import shutil; shutil.rmtree('output')"},
+    {"id": "normalize", "type": "normalize_lesson"},
+    {"id": "deduplicate", "type": "check_duplicate"},
+    {"id": "approval", "type": "manual_approval"},
+    {"id": "persist", "type": "save_draft"}
+  ],
+  "edges": [
+    ["validate", "sneak"],
+    ["sneak", "normalize"],
+    ["normalize", "deduplicate"],
+    ["deduplicate", "approval"],
+    ["approval", "persist"]
+  ]
+}

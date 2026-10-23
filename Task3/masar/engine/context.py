@@ -1,4 +1,6 @@
+import time
 from dataclasses import dataclass, field
+from typing import Callable
 
 
 # what a node gives back
@@ -19,4 +21,8 @@ class Run:
     now: str
     known_ids: set[str] = field(default_factory=set)
     seen_ids: set[str] = field(default_factory=set)
+    known_prints: dict[str, str] = field(default_factory=dict)  # fingerprint -> source_id
+    seen_prints: dict[str, str] = field(default_factory=dict)
+    explicit_items: set[str] = field(default_factory=set)  # approved one by one in a resume
     new_drafts: list[dict] = field(default_factory=list)
+    sleep: Callable[[float], None] = time.sleep

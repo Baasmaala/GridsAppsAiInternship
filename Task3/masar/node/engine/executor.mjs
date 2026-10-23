@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { NODES } from './registry.mjs';
 import { makeRun } from './context.mjs';
 import { ValidationError } from './errors.mjs';
+import { fingerprint, printSource } from './fingerprint.mjs';
 import { Workflow, loadWorkflow, parseWorkflow } from './loader.mjs';
 import { isObject } from './nodes/lesson_nodes.mjs';
 import { atomicJsonWrite, readStore } from './storage.mjs';
@@ -26,8 +27,16 @@ export function runWorkflow(lessons, { approvedBy = '', dryRun = false, store,
   // trim once here, so "   " counts as no reviewer everywhere
   const reviewer = typeof approvedBy === 'string' ? approvedBy.trim() : '';
   const now = new Date().toISOString();
-  const run = makeRun({ reviewer, dryRun, allowedLanguages: wf.allowedLanguages, now,
-    knownIds: saved.filter(d => isObject(d) && typeof d.source_id === 'string').map(d => d.source_id) });
+  const knownIds = [];
+  const knownPrints = new Map();
+  for (const d of saved) {
+    if (!isObject(d) || typeof d.source_id !== 'string') continue;
+    knownIds.push(d.source_id);
+    // older drafts have no fingerprint yet, so make it from the stored text
+    const fp = d.title_fingerprint || fingerprint(printSource(d));
+    if (fp && !knownPrints.has(fp)) knownPrints.set(fp, d.source_id);
+  }
+  const run = makeRun({ reviewer, dryRun, allowedLanguages: wf.allowedLanguages, now, knownIds, knownPrints });
 
   const items = lessons.map(raw => runItem(raw, wf.nodes, run));
 
@@ -88,6 +97,7 @@ function runItem(raw, nodes, run) {
   const item = { source_id: isObject(raw) && Object.hasOwn(raw, 'source_id') ? raw.source_id : 'UNKNOWN',
     status, steps };
   if (isObject(data) && Object.hasOwn(data, 'word_count')) item.word_count = data.word_count;
+  if (isObject(data) && data.possible_duplicate_of) item.possible_duplicate_of = data.possible_duplicate_of;
   if (error !== null) item.error = error;
   item.trace = trace;
   return item;
