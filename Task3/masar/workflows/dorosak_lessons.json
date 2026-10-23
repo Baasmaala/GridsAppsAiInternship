@@ -1,0 +1,23 @@
+{
+  "id": "dorosak-content-intake",
+  "version": "1.0.0",
+  "trigger": {"type": "manual"},
+  "allowed_languages": ["en"],
+  "nodes": [
+    {"id": "validate", "type": "validate_lesson"},
+    {"id": "normalize", "type": "normalize_lesson"},
+    {"id": "count_words", "type": "word_count"},
+    {"id": "deduplicate", "type": "check_duplicate"},
+    {"id": "approval", "type": "manual_approval"},
+    {"id": "persist", "type": "save_draft"},
+    {"id": "audit", "type": "log_result"}
+  ],
+  "edges": [
+    ["validate", "normalize"],
+    ["normalize", "count_words"],
+    ["count_words", "deduplicate"],
+    ["deduplicate", "approval"],
+    ["approval", "persist"],
+    ["persist", "audit"]
+  ]
+}

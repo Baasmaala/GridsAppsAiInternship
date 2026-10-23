@@ -1,0 +1,19 @@
+# my private files
+PLAN.md
+ss/
+*.pdf
+
+# secrets
+.env
+
+# run files
+output/
+*.tmp
+
+# python
+.venv/
+__pycache__/
+*.pyc
+
+# node
+node_modules/

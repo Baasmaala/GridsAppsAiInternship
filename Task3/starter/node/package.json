@@ -1,0 +1,3 @@
+{"name":"dorosak-flow-lab","version":"0.1.0","type":"module","private":true,
+ "scripts":{"demo":"node engine.mjs --dry-run --approved-by Trainer", "test":"node --test"},
+ "engines":{"node":">=20"}}

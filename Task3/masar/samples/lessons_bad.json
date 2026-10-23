@@ -1,0 +1,10 @@
+[
+  {"source_id": "DOR-BAD-001", "title": "", "category": "50 Common Verbs", "level": "A1", "language": "en", "body": "Empty title."},
+  {"source_id": "DOR-BAD-002", "title": "Bad Level", "category": "50 Common Verbs", "level": "9A", "language": "en", "body": "The level is not CEFR."},
+  {"source_id": "DOR-BAD-003", "title": "French Lesson", "category": "50 Common Verbs", "level": "A2", "language": "fr", "body": "Bonjour."},
+  {"source_id": "DOR-BAD-004", "title": "No Body", "level": "A1", "language": "en"},
+  "this is not a lesson",
+  {"source_id": "DOR-BAD-006", "title": "Weather Words", "category": "50 Common Verbs", "level": "A1", "language": "en", "body": "It is sunny today."},
+  {"source_id": "DOR-BAD-006", "title": "Weather Words", "category": "50 Common Verbs", "level": "A1", "language": "en", "body": "It is sunny today."},
+  {"source_id": "DOR-BAD-008", "title": "!!!", "category": "50 Common Verbs", "level": "A1", "language": "en", "body": "Title has no letters."}
+]
