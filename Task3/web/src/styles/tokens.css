@@ -16,7 +16,7 @@
 
   --font-title: "Bricolage Grotesque", "IBM Plex Sans Arabic", system-ui, sans-serif;
   --font-text: "IBM Plex Sans", "IBM Plex Sans Arabic", system-ui, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  --font-mono: "IBM Plex Mono", "IBM Plex Sans Arabic", ui-monospace, Consolas, monospace;
 }
 
 /* bricolage has no arabic letters, so arabic titles use plex arabic */

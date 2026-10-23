@@ -5,14 +5,14 @@ import { MasarMark } from './MasarMark';
 export type PageId = 'overview' | 'workflow' | 'run' | 'replay' | 'inbox' | 'drafts' | 'audit' | 'lab';
 
 export const PAGES: { id: PageId; label: Key; ready: boolean }[] = [
-  { id: 'overview', label: 'nav.overview', ready: false },
+  { id: 'overview', label: 'nav.overview', ready: true },
   { id: 'workflow', label: 'nav.workflow', ready: true },
-  { id: 'run', label: 'nav.run', ready: false },
-  { id: 'replay', label: 'nav.replay', ready: false },
-  { id: 'inbox', label: 'nav.inbox', ready: false },
-  { id: 'drafts', label: 'nav.drafts', ready: false },
-  { id: 'audit', label: 'nav.audit', ready: false },
-  { id: 'lab', label: 'nav.lab', ready: false },
+  { id: 'run', label: 'nav.run', ready: true },
+  { id: 'replay', label: 'nav.replay', ready: true },
+  { id: 'inbox', label: 'nav.inbox', ready: true },
+  { id: 'drafts', label: 'nav.drafts', ready: true },
+  { id: 'audit', label: 'nav.audit', ready: true },
+  { id: 'lab', label: 'nav.lab', ready: true },
 ];
 
 export function Header({ page }: { page: PageId }) {
@@ -20,7 +20,7 @@ export function Header({ page }: { page: PageId }) {
   return (
     <header className="header">
       <div className="wrap header-row">
-        <a className="brand" href="#/workflow">
+        <a className="brand" href="#/overview">
           <MasarMark size={40} />
           <span className="brand-name">Masar</span>
           <span className="brand-ar" lang="ar">مسار</span>
