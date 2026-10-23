@@ -4,7 +4,7 @@ import copy
 import re
 
 from .context import default_workflow, pick_item, sample_lesson, what_if
-from .knowledge import MODES, STATION_WORDS, STATIONS, STATUS, station_label
+from .knowledge import MODES, STATION_WORDS, STATIONS, STATUS, STATUS_DRY, station_label
 
 LESSON_ID = re.compile(r"\b[A-Z]{2,}(?:-[A-Z0-9]+)+\b")
 WH = re.compile(r"\b(why|what|how|when|which|does|do)\b|لماذا|ماذا|كيف|متى|هل|^ما\b|ما هي|ما وظيفة")
@@ -106,10 +106,11 @@ def source(ctx, item=None, node=None):
     return {"run": run, "lesson": str(item["source_id"]) if item else None, "station": node}
 
 
-def explain_item(item, lang):
+def explain_item(item, lang, dry=False):
     last = item["trace"][-1] if item.get("trace") else {}
     status = item["status"]
-    meaning = STATUS.get(status, {}).get(lang, status).format(dup=item.get("possible_duplicate_of", ""))
+    meanings = STATUS_DRY if dry and status in STATUS_DRY else STATUS
+    meaning = meanings.get(status, {}).get(lang, status).format(dup=item.get("possible_duplicate_of", ""))
     stopped = last.get("result") in ("stop", "error")
     key = "stopped" if stopped else "went"
     text = T[key][lang].format(sid=item["source_id"], station=station_label(last.get("type", ""), lang),
@@ -206,7 +207,7 @@ def answer(question, lang, ctx, find=None):
     if WHY.search(q) or ((named or "this lesson" in q or "الدرس" in question) and ctx.item):
         if not ctx.item:
             return "help", T["need_lesson"][lang], source(ctx)
-        text, node = explain_item(ctx.item, lang)
+        text, node = explain_item(ctx.item, lang, ctx.dry)
         return "why", text, source(ctx, ctx.item, node)
     station = station_in(question)
     if station and NODE_Q.search(q):
@@ -217,7 +218,7 @@ def answer(question, lang, ctx, find=None):
         if not ctx.report and not ctx.item:
             return "help", T["need_run"][lang], source(ctx)
         if not ctx.report:
-            text, node = explain_item(ctx.item, lang)
+            text, node = explain_item(ctx.item, lang, ctx.dry)
             return "why", text, source(ctx, ctx.item, node)
         return "run", explain_run(ctx, lang), source(ctx)
     if station:

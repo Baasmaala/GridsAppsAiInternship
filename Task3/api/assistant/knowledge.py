@@ -89,6 +89,19 @@ STATUS = {
     "complete": {"en": "it went through the whole line.", "ar": "مر على الخط كله."},
 }
 
+# in a dry run nothing is saved, so a lesson that stopped at approval is not in the inbox
+STATUS_DRY = {
+    "review_pending": {"en": "this was a dry run, so nothing was saved and it is not in the Review Inbox. "
+                             "In a real run it would wait there for a person.",
+                       "ar": "كان هذا تشغيلا تجريبيا، فلم يُحفظ شيء والدرس ليس في صندوق المراجعة. "
+                             "في تشغيل حقيقي سينتظر هناك شخصا."},
+    "possible_duplicate": {"en": "its title looks like {dup}. This was a dry run, so nothing was saved and it is "
+                                 "not in the Review Inbox. In a real run a person would have to approve this one "
+                                 "lesson by name.",
+                           "ar": "عنوانه يشبه {dup}. كان هذا تشغيلا تجريبيا، فلم يُحفظ شيء والدرس ليس في صندوق "
+                                 "المراجعة. في تشغيل حقيقي يجب أن يوافق شخص على هذا الدرس بالاسم."},
+}
+
 MODES = {"dry-run": {"en": "dry run", "ar": "تشغيل تجريبي"},
          "review": {"en": "review run", "ar": "تشغيل للمراجعة"},
          "approved": {"en": "approved run", "ar": "تشغيل بموافقة"}}

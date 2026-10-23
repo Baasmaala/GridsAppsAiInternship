@@ -136,6 +136,23 @@ class AskMasarApi(unittest.TestCase):
         self.assertIn("DOR-BAD-002 stopped at Validate", r["answer"])
         self.assertEqual(r["source"]["run"], "dry run")
 
+    def test_dry_run_lesson_is_not_called_waiting_in_the_inbox(self):
+        # a dry run saves nothing, so nothing from it is in the inbox
+        report = self.client.post("/api/runs", json={"workflow": "dorosak_lessons", "sample": "lessons_good",
+                                                     "dry_run": True}).json()
+        item = report["items"][0]
+        self.assertEqual(item["status"], "review_pending")
+        for q, lang, start in (("why did this lesson stop?", "en", "DOR-CAT-001 stopped at Approval"),
+                               ("لماذا توقف هذا الدرس؟", "ar", "توقف DOR-CAT-001 عند محطة الموافقة")):
+            answer = self.ask(q, lang=lang, item=item, workflow="dorosak_lessons").json()["answer"]
+            self.assertTrue(answer.startswith(start), answer)
+            self.assertNotIn("it waits in the Review Inbox", answer)
+            self.assertNotIn("ينتظر في صندوق المراجعة", answer)
+            self.assertTrue("not in the Review Inbox" in answer or "ليس في صندوق المراجعة" in answer, answer)
+        # a saved review run still says it waits there
+        saved = self.ask("why did this lesson stop?", run_id=self.run_id, source_id="DOR-CAT-001").json()["answer"]
+        self.assertIn("it waits in the Review Inbox", saved)
+
     def test_dry_item_limits(self):
         big = {"source_id": "X", "status": "s", "steps": [], "trace": [{"input": "x" * 70_000}]}
         self.assertEqual(self.ask("why?", item=big).status_code, 422)
