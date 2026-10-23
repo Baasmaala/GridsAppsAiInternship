@@ -194,3 +194,32 @@ Small differences I know about. None of them changes a status in our samples:
   like the starter. They are separate files, so each engine has its own drafts.
 - The parity check cannot test `failed_error`, because no sample can break a node from
   the CLI (that is on purpose). Both engines have their own test for it.
+
+## 11. Backend (phase 4)
+
+- **From the web, saving happens only in the review inbox, one lesson at a time.**
+  `POST /api/runs` accepts `approved_by` only together with `dry_run: true` (to see a
+  `dry_run_preview`). A real run from the web is always a review run. This is stricter
+  than the CLI, where `--approved-by` saves directly (the brief's contract).
+- **Approving in the inbox names one lesson,** so it can approve a `possible_duplicate`
+  (the reviewer is looking at it, with the old draft shown next to it).
+- **No file path comes from a request.** Workflows and samples are picked by name from
+  fixed folders (`a-z 0-9 _ -`). Uploads go to `output/uploads/` (max 200 KB, max 500
+  items, must be a JSON array of objects). The lessons are checked when they run.
+- **Local only:** the server binds to 127.0.0.1 (fixed in `api/__main__.py`), only accepts
+  the host names `127.0.0.1` and `localhost` (stops DNS rebinding), and CORS allows only
+  the Vite dev server on port 5173. There is no login. The reviewer name is not an identity.
+- **Strict request bodies:** unknown fields are refused, and `"dry_run": "no"` is an error,
+  not `false`.
+- **One lock for all writes,** so two clicks at the same time cannot save a lesson twice.
+  This works for one server process only.
+- **Demo reset** needs `{"confirm": "reset"}`, only deletes a folder called `output`, and
+  with `"seed": true` makes one review run so the inbox has 4 lessons.
+- **Error codes:** 404 unknown workflow, sample or run. 422 bad body, bad upload, rejected
+  workflow. 409 a decision that cannot happen (no name, no reason, already decided). 413
+  upload too big.
+- **Dependencies:** fastapi and uvicorn, httpx for tests only, managed with `uv`
+  (`pyproject.toml` + `uv.lock`). The engine in `masar/` still uses the standard library only.
+- **Warning to know about:** starlette now prints "Using `httpx` with `starlette.testclient`
+  is deprecated; install `httpx2` instead" when the API tests start. The tests pass. Moving
+  to httpx2 would be a new dependency, so I have not done it.

@@ -16,11 +16,11 @@ DEFAULT_INPUT = ROOT / "masar" / "samples" / "lessons_good.json"
 LESSONS_ID = "dorosak-content-intake"
 
 
-def default_store(workflow_id):
+def default_store(workflow_id, output_dir=OUTPUT_DIR):
     # the lessons workflow keeps the brief's file name, other workflows get their own file
     if workflow_id == LESSONS_ID:
-        return OUTPUT_DIR / "python_drafts.json"
-    return OUTPUT_DIR / f"python_{re.sub(r'[^A-Za-z0-9_-]', '_', workflow_id)}_drafts.json"
+        return Path(output_dir) / "python_drafts.json"
+    return Path(output_dir) / f"python_{re.sub(r'[^A-Za-z0-9_-]', '_', workflow_id)}_drafts.json"
 
 
 def _inside(path, folder):
