@@ -67,7 +67,7 @@ def _run_item(raw, nodes, run):
             # a bug in a node, not bad input. this lesson stops, the others go on
             status, error = "failed_error", f"{type(ex).__name__}: {ex}"
         entry["ms"] = round((time.perf_counter() - start) * 1000, 3)
-        if error:
+        if error is not None:
             entry.update(result="error", status=status, error=error)
             trace.append(entry)
             break
@@ -88,7 +88,7 @@ def _run_item(raw, nodes, run):
             "status": status, "steps": steps}
     if isinstance(data, dict) and "word_count" in data:
         item["word_count"] = data["word_count"]
-    if error:
+    if error is not None:
         item["error"] = error
     item["trace"] = trace
     return item

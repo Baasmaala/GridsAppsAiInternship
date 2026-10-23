@@ -99,7 +99,7 @@ I do not change starter/. I fix these in masar, each with a test.
 broke (a bug, not bad input). That lesson stops, the other lessons still run, and the
 error text says what broke, for example `RuntimeError: something broke`.
 The starter would call both `failed_validation`, which hides real bugs as bad input.
-The Node engine in phase 2 must use `failed_error` too.
+The Node engine uses `failed_error` too (done in phase 2).
 
 Other changes (all have tests):
 - **Same `source_id` twice in one input:** the second copy is `skipped_duplicate` in
@@ -128,6 +128,23 @@ Other changes (all have tests):
 
 ## 9. Folder
 
-The starter folder is `Task3/Starter/` (capital S). The brief and PLAN.md use
-`starter/` (small s). Windows does not care, but GitHub and Linux do, so a
-CI job or a README path with `starter/` would break. Rename it to `starter/`.
+The starter first came as `Task3/Starter/` (capital S). It is now `starter/`, like the brief.
+
+## 10. Python vs Node
+
+Both masar engines read the same `masar/workflows/` and `masar/samples/` files.
+`tools/parity_check.py` runs both CLIs on 5 cases (dry run, bad input, already saved,
+no reviewer, approved twice) and compares the status of every lesson.
+
+Small differences I know about. None of them changes a status in our samples:
+- **Time format:** Python writes `2026-10-23T11:38:31.849318+00:00`, Node writes
+  `2026-10-23T11:38:31.849Z`. Same moment, different text.
+- **Error class names in `failed_error`:** Python says `RuntimeError: ...`, Node says
+  `Error: ...` or `RangeError: ...`. Each uses its own language's names.
+- **Rare whitespace characters:** Python and Node do not agree on every Unicode space
+  when trimming or counting words (for example U+FEFF counts as a space in Node, not in
+  Python). Normal spaces, tabs and new lines work the same.
+- **Default drafts file:** `output/python_drafts.json` and `output/node_drafts.json`,
+  like the starter. They are separate files, so each engine has its own drafts.
+- The parity check cannot test `failed_error`, because no sample can break a node from
+  the CLI (that is on purpose). Both engines have their own test for it.
