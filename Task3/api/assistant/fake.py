@@ -20,6 +20,12 @@ FIELD_WORDS = {
     "category": ["category", "الفئة", "التصنيف"], "body": ["body", "النص"], "source_id": ["source_id"],
     "question": ["question", "السؤال"], "topic": ["topic", "الموضوع"], "answer": ["answer", "الجواب", "الإجابة"],
 }
+FIELD_NAMES = {
+    "en": {"level": "the level", "title": "the title", "language": "the language", "category": "the category",
+           "body": "the body", "question": "the question", "topic": "the topic", "answer": "the answer"},
+    "ar": {"level": "المستوى", "title": "العنوان", "language": "اللغة", "category": "الفئة", "body": "النص",
+           "question": "السؤال", "topic": "الموضوع", "answer": "الجواب"},
+}
 EMPTY = {"empty", "blank", "nothing", "none", "فارغ", "فارغا", "فارغة", "فاضي"}
 CONNECTORS = re.compile(r"^\s*(?:is|was|were|=|:|becomes|became|be|set to|to|equal to|كان|كانت|هو|هي|يساوي|تساوي)\s*")
 
@@ -64,12 +70,21 @@ T = {
 }
 
 
+ARABIC = re.compile(r"[؀-ۿ]")
+LATIN = re.compile(r"[A-Za-z]")
+
+
 def pick_lang(question, lang):
+    # "in english" / "بالعربية" wins. then the language the question is written in. then the page.
     q = question.lower()
     if "in arabic" in q or "بالعربية" in question or "بالعربي" in question:
         return "ar"
     if "in english" in q or "بالإنجليزية" in question or "بالانجليزية" in question:
         return "en"
+    words = LESSON_ID.sub("", question)  # lesson ids are latin in both languages
+    arabic, latin = len(ARABIC.findall(words)), len(LATIN.findall(words))
+    if arabic or latin:
+        return "ar" if arabic >= latin else "en"
     return lang if lang in ("en", "ar") else "en"
 
 
@@ -161,7 +176,8 @@ def answer_what_if(question, ctx, lang):
         outcome = T["wi_pass"][lang].format(status=item["status"])
     else:
         outcome = T["wi_other"][lang].format(station=station, status=item["status"])
-    text = T["what_if"][lang].format(field=field, value=value, outcome=outcome, base=base.get("source_id", "?"))
+    name = FIELD_NAMES[lang].get(field, field)
+    text = T["what_if"][lang].format(field=name, value=value, outcome=outcome, base=base.get("source_id", "?"))
     return text, {"run": "what-if dry run", "lesson": str(base.get("source_id")), "station": last["node"]}
 
 

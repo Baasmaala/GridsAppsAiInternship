@@ -67,3 +67,10 @@ The Node commands are the same with `node node/engine.mjs` and give the same sta
 - Every record in it has `"status": "draft"` and `"reviewed_by": "<name>"`. Draft means not published.
 - The report itself is printed to the terminal, not saved.
 - `--store <file>` puts the drafts file somewhere else (the tests use a temp folder).
+
+## Masar adds a few more
+
+The table above is the starter's (and the brief's). Masar keeps those five statuses and adds
+`possible_duplicate` (a title that looks like a saved one, waits for a person), `rejected` (a
+reviewer said no) and `failed_error` (a station broke: a bug, not bad input). See `NOTES.md`
+section 7, and `ARCHITECTURE.md` for a picture of one run.

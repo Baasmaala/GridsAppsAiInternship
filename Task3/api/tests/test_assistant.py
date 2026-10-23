@@ -106,6 +106,29 @@ class AskMasarApi(unittest.TestCase):
         r = self.ask("Explain this run in Arabic", run_id=self.run_id).json()
         self.assertTrue(r["answer"].startswith("التشغيل"))
 
+    def test_answer_in_the_language_of_the_question(self):
+        # the page is in english, the question in arabic: the answer is arabic
+        r = self.ask("لماذا توقف هذا الدرس؟", lang="en", run_id=self.run_id, source_id="DOR-CAT-004").json()
+        self.assertTrue(r["answer"].startswith("توقف DOR-CAT-004"), r["answer"])
+        r = self.ask("لماذا توقف DOR-CAT-002؟", lang="en").json()
+        self.assertTrue(r["answer"].startswith("توقف DOR-CAT-002"), r["answer"])
+        # and the other way round
+        r = self.ask("Why did this lesson stop?", lang="ar", run_id=self.run_id, source_id="DOR-CAT-004").json()
+        self.assertTrue(r["answer"].startswith("DOR-CAT-004 stopped"), r["answer"])
+        # saying the language wins
+        r = self.ask("لماذا توقف هذا الدرس؟ بالإنجليزية", lang="ar", run_id=self.run_id, source_id="DOR-CAT-004").json()
+        self.assertTrue(r["answer"].startswith("DOR-CAT-004 stopped"), r["answer"])
+        r = self.ask("approve DOR-CAT-004", lang="ar").json()
+        self.assertTrue(r["answer"].startswith("I can only read"), r["answer"])
+
+    def test_what_if_wording(self):
+        r = self.ask("ماذا يحدث لو كان المستوى 9A؟", lang="en", run_id=self.run_id, source_id="DOR-CAT-001").json()
+        self.assertTrue(r["answer"].startswith("لو كان المستوى '9A'"), r["answer"])
+        self.assertNotIn("level", r["answer"].split("Invalid")[0])
+        r = self.ask("What happens if the level is 9A?", run_id=self.run_id, source_id="DOR-CAT-001").json()
+        self.assertTrue(r["answer"].startswith("If the level is '9A', the lesson stops at Validate"), r["answer"])
+        self.assertEqual(r["source"]["run"], "what-if dry run")
+
     def test_last_dry_run_item(self):
         report = self.client.post("/api/runs", json={"workflow": "dorosak_lessons", "sample": "lessons_bad",
                                                      "dry_run": True}).json()

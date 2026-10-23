@@ -1,0 +1,59 @@
+# runs every Task3 test on Windows and Linux. only for changes in Task3/.
+name: task3 masar
+
+on:
+  push:
+    paths: ["Task3/**", ".github/workflows/task3.yml"]
+  pull_request:
+    paths: ["Task3/**", ".github/workflows/task3.yml"]
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: Task3
+    env:
+      FAKE_MODEL: "1"  # Ask Masar never calls a real model in CI
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: astral-sh/setup-uv@v10
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 20
+
+      - name: Python packages
+        run: uv sync
+
+      - name: Python tests (engine, tools, api, ask masar, starter, node suites, parity)
+        run: uv run python -m unittest -v
+
+      - name: Node tests (masar)
+        working-directory: Task3/masar/node
+        run: node --test
+
+      - name: Node tests (starter)
+        working-directory: Task3/starter/node
+        run: node --test
+
+      - name: Workshop challenges
+        run: uv run python tools/challenges.py
+
+      - name: Web packages
+        working-directory: Task3/web
+        run: npm ci
+
+      - name: Web tests
+        working-directory: Task3/web
+        run: npm test
+
+      - name: Web type check and build
+        working-directory: Task3/web
+        run: npm run build

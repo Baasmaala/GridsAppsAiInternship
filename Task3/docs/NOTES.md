@@ -82,7 +82,7 @@ I do not change starter/. I fix these in masar, each with a test.
    Fix in masar: trim the name once at the start and use it everywhere.
    Test: spaces-only reviewer -> `review_pending`, nothing saved, `mode: "review"`.
 2. **Python crashes if `normalize` runs before `validate`.** The `required` list is
-   made only inside the validate branch, so normalize gets a `NameError`, which is
+   made only inside the validate branch, so normalize gets an `UnboundLocalError` (a kind of `NameError`), which is
    not caught. Node does not have this bug.
    Fix in masar: required fields live in one place, outside any node, and the
    linter checks that validate comes before normalize.
