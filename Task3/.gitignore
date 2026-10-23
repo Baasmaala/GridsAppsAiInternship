@@ -17,3 +17,8 @@ __pycache__/
 
 # node
 node_modules/
+
+# web build
+web/dist/
+# temporary test pages
+web/public/_*.html

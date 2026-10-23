@@ -1,0 +1,26 @@
+/* the only colors in the app. from PLAN.md phase 5, do not add more. */
+:root {
+  --paper: #F5F2EA;
+  --card: #FFFFFF;
+  --rule: #E4DED2;
+  --ink: #1E2328;
+  --muted: #6B6A64;
+  --route: #C4572A;
+  --ok: #5E7D3A;
+  --wait: #D9A23B;
+  --skip: #8A8F98;
+  --fail: #A23B32;
+
+  --radius: 6px;
+  --shadow: 0 1px 0 rgba(30, 35, 40, 0.04);
+
+  --font-title: "Bricolage Grotesque", "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --font-text: "IBM Plex Sans", "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+
+/* bricolage has no arabic letters, so arabic titles use plex arabic */
+:root:lang(ar) {
+  --font-title: "IBM Plex Sans Arabic", "IBM Plex Sans", system-ui, sans-serif;
+  --font-text: "IBM Plex Sans Arabic", "IBM Plex Sans", system-ui, sans-serif;
+}

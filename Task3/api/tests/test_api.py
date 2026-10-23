@@ -280,7 +280,7 @@ class LocalOnly(ApiTestCase):
         for host in ("evil.example", "192.168.1.5", "127.0.0.1.evil.example"):
             r = self.client.get("/api/workflows", headers={"Host": host})
             self.assertEqual(r.status_code, 400, host)
-        self.assertEqual(self.client.get("/api/workflows", headers={"Host": "localhost:8000"}).status_code, 200)
+        self.assertEqual(self.client.get("/api/workflows", headers={"Host": "localhost:8001"}).status_code, 200)
 
     def test_cors_only_for_the_web_app(self):
         ok = self.client.get("/api", headers={"Origin": "http://localhost:5173"})
