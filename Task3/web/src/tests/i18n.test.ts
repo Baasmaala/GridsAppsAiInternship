@@ -41,4 +41,16 @@ describe('english and arabic', () => {
     expect(format('{n} stations', { n: 7 })).toBe('7 stations');
     expect(format('{n} stations')).toBe('{n} stations');
   });
+
+  test('counts take the right form', () => {
+    expect(format(en['ib.words'], { n: 1 })).toBe('1 word');
+    expect(format(en['ib.words'], { n: 8 })).toBe('8 words');
+    // arabic: 3 to 10 plural, 11 to 99 singular (and عنصرا), 100 singular
+    expect(format(ar['ib.words'], { n: 7 }, 'ar')).toBe('7 كلمات');
+    expect(format(ar['ib.words'], { n: 23 }, 'ar')).toBe('23 كلمة');
+    expect(format(ar['sample.items'], { n: 4 }, 'ar')).toBe('4 عناصر');
+    expect(format(ar['sample.items'], { n: 12 }, 'ar')).toBe('12 عنصرا');
+    expect(format(ar['sample.items'], { n: 100 }, 'ar')).toBe('100 عنصر');
+    expect(format(ar['ib.words'], {}, 'ar')).toBe('{n} {n|few:كلمات|other:كلمة}');
+  });
 });

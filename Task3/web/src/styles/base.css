@@ -46,7 +46,7 @@ pre { margin: 0; white-space: pre-wrap; word-break: break-word; }
 }
 .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
 .brand-name { font: 700 20px/1 "Bricolage Grotesque", system-ui, sans-serif; letter-spacing: -0.01em; }
-.brand-ar { font: 500 17px/1 "IBM Plex Sans Arabic", system-ui, sans-serif; color: var(--muted); }
+.brand-ar { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; letter-spacing: 0; }
 
 .nav { display: flex; gap: 4px 18px; flex-wrap: wrap; flex: 1; }
 .nav a, .nav span {
@@ -137,8 +137,7 @@ pre { margin: 0; white-space: pre-wrap; word-break: break-word; }
 .detail { padding: 16px; display: grid; gap: 14px; border-top: 1px solid var(--rule); scroll-margin-block: 16px; }
 .detail > * { max-width: 760px; }
 .detail dl { margin: 0; display: grid; gap: 12px; }
-.detail dt { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
-:lang(ar) .detail dt { text-transform: none; letter-spacing: 0; font-size: 13px; }
+.detail dt { font-size: 13px; color: var(--muted); }
 .detail dd { margin: 2px 0 0; }
 .json { background: var(--paper); border: 1px solid var(--rule); border-radius: var(--radius); padding: 10px 12px; direction: ltr; text-align: left; }
 

@@ -93,7 +93,7 @@ export function RunStudioPage() {
 
   const report = result?.report;
   return (
-    <Page title={t('run.title')} intro={t('run.intro')}>
+    <Page title={t('run.title')}>
       <ErrorNote error={workflows.error ?? samples.error} />
 
       <section className="card pad form">
@@ -112,7 +112,7 @@ export function RunStudioPage() {
             <span>{t('run.sample')}</span>
             <select value={sample} onChange={e => setSample(e.target.value)}>
               {samples.data?.map(s => (
-                <option key={s.key} value={s.key}>{sampleName(s.key, t)} · {t('sample.items', { n: s.items })}</option>
+                <option key={s.key} value={s.key}>{sampleName(s.key, t)} ({t('sample.items', { n: s.items })})</option>
               ))}
             </select>
           </label>

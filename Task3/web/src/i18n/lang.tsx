@@ -33,7 +33,7 @@ export function LangProvider({ children }: { children: ReactNode }) {
   const api: LangApi = {
     lang,
     toggle: () => setLang(l => (l === 'en' ? 'ar' : 'en')),
-    t: (key, vars) => format(STRINGS[lang][key], vars),
+    t: (key, vars) => format(STRINGS[lang][key], vars, lang),
   };
   return <LangContext.Provider value={api}>{children}</LangContext.Provider>;
 }

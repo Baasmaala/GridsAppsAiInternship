@@ -52,7 +52,7 @@ export function ReplayPage({ params }: { params: URLSearchParams }) {
   const entry = item?.trace[Math.min(step, item.trace.length - 1)];
 
   return (
-    <Page title={t('rp.title')} intro={t('rp.intro')}>
+    <Page title={t('rp.title')}>
       <ErrorNote error={runs.error ?? saved.error} />
       {noRuns && <Empty>{t('rp.noRuns')}</Empty>}
 
@@ -65,8 +65,8 @@ export function ReplayPage({ params }: { params: URLSearchParams }) {
                 {last && <option value={DRY}>{t('rp.lastDry')}</option>}
                 {[...(runs.data ?? [])].reverse().map(r => (
                   <option key={r.run_id} value={r.run_id}>
-                    {formatTime(r.created_at, lang)} · {workflowName(r.workflow_id, t)} · {modeName(r.mode, t)}
-                    {details && ` · ${shortId(r.run_id)}`}
+                    {[formatTime(r.created_at, lang), workflowName(r.workflow_id, t), modeName(r.mode, t)].join(t('common.listSep'))}
+                    {details && ` (${shortId(r.run_id)})`}
                   </option>
                 ))}
               </select>
@@ -76,7 +76,7 @@ export function ReplayPage({ params }: { params: URLSearchParams }) {
                 <span>{t('rp.lesson')}</span>
                 <select value={index} onChange={e => go(runId ?? DRY, Number(e.target.value))}>
                   {report.items.map((it, i) => (
-                    <option key={i} value={i}>{details ? `${String(it.source_id)} · ${it.status}` : plainOption(it)}</option>
+                    <option key={i} value={i}>{details ? `${String(it.source_id)} (${it.status})` : plainOption(it)}</option>
                   ))}
                 </select>
               </label>

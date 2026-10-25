@@ -32,10 +32,10 @@ describe('what the panel looks at', () => {
 
   test('the source line', () => {
     expect(sourceLine({ run: '5f9eeac8', lesson: 'DOR-CAT-004', station: 'approval', mode: 'templates' }))
-      .toBe('run 5f9eeac8 · DOR-CAT-004 · approval · templates');
+      .toBe('run 5f9eeac8, DOR-CAT-004, approval, templates');
     expect(sourceLine({ run: null, lesson: null, station: 'check_duplicate', mode: 'templates' }))
-      .toBe('check_duplicate · templates');
+      .toBe('check_duplicate, templates');
     expect(sourceLine({ run: 'what-if dry run', lesson: 'DOR-CAT-001', station: 'validate', mode: 'templates' }))
-      .toBe('what-if dry run · DOR-CAT-001 · validate · templates');
+      .toBe('what-if dry run, DOR-CAT-001, validate, templates');
   });
 });

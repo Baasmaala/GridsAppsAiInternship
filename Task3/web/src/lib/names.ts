@@ -27,6 +27,11 @@ export function stationName(type: string, fallback: string, t: T): string {
   return has(k) ? t(k) : fallback;
 }
 
+export function languageName(code: string, t: T): string {
+  const k = `lang.name.${code}`;
+  return has(k) ? t(k) : code;
+}
+
 export function modeName(mode: string, t: T): string {
   const k = `mode.${mode}`;
   return has(k) ? t(k) : mode;

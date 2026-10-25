@@ -23,8 +23,9 @@ export function Header({ page, onAsk, asking }: { page: PageId; onAsk: () => voi
         {/* the logo is the same in both languages, it never flips with rtl */}
         <a className="brand" href="#/overview" dir="ltr">
           <MasarMark size={40} />
-          <span className="brand-name">Masar</span>
-          <span className="brand-ar" lang="ar">مسار</span>
+          {lang === 'ar'
+            ? <span className="brand-name brand-ar" lang="ar">مسار</span>
+            : <span className="brand-name">Masar</span>}
         </a>
         <nav className="nav" aria-label="Pages">
           {PAGES.map(p =>

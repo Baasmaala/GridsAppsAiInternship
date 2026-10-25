@@ -21,15 +21,15 @@ export function OverviewPage() {
   });
 
   const tiles = data.data ? [
-    { label: t('ov.drafts'), n: data.data.counts.drafts, color: 'var(--ok)', href: link('drafts') },
-    { label: t('ov.waiting'), n: data.data.counts.waiting, color: 'var(--wait)', href: link('inbox') },
-    { label: t('ov.lookalike'), n: data.data.counts.lookalike, color: 'var(--wait)', href: link('inbox') },
-    { label: t('ov.failed'), n: data.data.counts.failed, color: 'var(--fail)', href: link('run') },
-    { label: t('ov.skipped'), n: data.data.counts.skipped, color: 'var(--skip)', href: link('run') },
+    { label: t('ov.drafts'), n: data.data.counts.drafts, href: link('drafts') },
+    { label: t('ov.waiting'), n: data.data.counts.waiting, href: link('inbox') },
+    { label: t('ov.lookalike'), n: data.data.counts.lookalike, href: link('inbox') },
+    { label: t('ov.failed'), n: data.data.counts.failed, href: link('run') },
+    { label: t('ov.skipped'), n: data.data.counts.skipped, href: link('run') },
   ] : [];
 
   return (
-    <Page title={t('ov.title')} intro={t('ov.intro')}>
+    <Page title={t('ov.title')}>
       <ErrorNote error={data.error} />
       <StartHere />
       {data.data && (
@@ -38,7 +38,7 @@ export function OverviewPage() {
             {tiles.map(tile => (
               <a key={tile.label} className="card tile" href={tile.href}>
                 <span className="tile-n">{tile.n}</span>
-                <span className="tag"><span className="tag-dot" style={{ background: tile.color }} />{tile.label}</span>
+                <span className="tile-label">{tile.label}</span>
               </a>
             ))}
           </div>
@@ -51,7 +51,7 @@ export function OverviewPage() {
                   {[...data.data.runs].reverse().slice(0, 5).map(r => (
                     <li key={r.run_id} className="row">
                       <div className="row-main">
-                        <span>{workflowName(r.workflow_id, t)} · {modeName(r.mode, t)}</span>
+                        <span>{[workflowName(r.workflow_id, t), modeName(r.mode, t)].join(t('common.listSep'))}</span>
                         <span className="muted">{formatTime(r.created_at, lang)}{details && <span className="mono"> {shortId(r.run_id)}</span>}</span>
                       </div>
                       <div className="row-tags">

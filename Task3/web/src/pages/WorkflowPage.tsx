@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { api, type WorkflowDetail, type WorkflowNode, type WorkflowSummary } from '../api/client';
-import { Badge } from '../components/StatusTag';
 import { Icon } from '../components/Icon';
 import { useLang } from '../i18n/lang';
 import { DetailsSwitch, useDetails } from '../lib/details';
 import { en, type Key } from '../i18n/strings';
+import { languageName } from '../lib/names';
 
 const TRIGGER: WorkflowNode = { id: 'trigger', type: 'trigger' };
 
@@ -21,11 +21,6 @@ function nodeKey(type: string, part: 'checks' | 'stops' | 'label'): Key | null {
 // the paragraph above the list already says this, so the lines do not repeat it
 const REPEATED = /\. workflow\.json is a description, not code$/;
 const shortError = (e: string) => e.replace(REPEATED, '');
-
-function languageName(code: string, t: (k: Key) => string): string {
-  const key = `lang.name.${code}`;
-  return key in en ? t(key as Key) : code;
-}
 
 function StationDot({ kind, selected }: { kind: 'start' | 'stop' | 'gate'; selected: boolean }) {
   const fill = selected ? 'var(--route)' : 'var(--card)';
@@ -82,7 +77,6 @@ export function WorkflowPage() {
       <div className="page-top">
         <div className="page-head">
           <h1>{t('wf.title')}</h1>
-          <p className="muted">{t('wf.intro')}</p>
         </div>
         <div className="page-actions"><DetailsSwitch /></div>
       </div>
@@ -107,9 +101,9 @@ export function WorkflowPage() {
           <div className="meta">
             <h2 id="wf-heading">{name(detail.key)}</h2>
             {detail.ok ? (
-              <Badge color="var(--ok)">{t('wf.checked')} · {t('wf.stations', { n: detail.nodes?.length ?? 0 })}</Badge>
+              <span className="muted">{t('wf.checked', { n: detail.nodes?.length ?? 0 })}</span>
             ) : (
-              <Badge color="var(--fail)">{t('wf.refusedBadge')} · {t('wf.problems', { n: detail.errors.length })}</Badge>
+              <span className="error-text">{t('wf.refusedBadge', { n: detail.errors.length })}</span>
             )}
             {details && detail.id && <span className="mono">{detail.id}{detail.version ? ` ${detail.version}` : ''}</span>}
             {detail.allowed_languages && (

@@ -1,6 +1,5 @@
 import { api } from '../api/client';
 import { Empty, ErrorNote, Page } from '../components/Page';
-import { Badge } from '../components/StatusTag';
 import { useLang } from '../i18n/lang';
 import { useDetails } from '../lib/details';
 import { draftsFileWorkflow, workflowName } from '../lib/names';
@@ -22,19 +21,17 @@ export function DraftsPage() {
           return (
             <article key={`${file}/${String(draft.source_id)}`} className="card pad draft">
               <div className="draft-top">
-                <Badge color="var(--ok)">{t('dr.badge')}</Badge>
+                <span className="draft-label">{t('dr.badge')}</span>
                 {details && <span className="mono muted">{String(draft.source_id)}</span>}
               </div>
               <h2 dir="auto">{title}</h2>
               <p className="muted">
-                {workflowName(draftsFileWorkflow(file), t)}
-                {draft.level ? ` · ${String(draft.level)}` : ''}
-                {typeof draft.word_count === 'number' ? ` · ${t('ib.words', { n: draft.word_count })}` : ''}
+                {[workflowName(draftsFileWorkflow(file), t), draft.level ? String(draft.level) : '',
+                  typeof draft.word_count === 'number' ? t('ib.words', { n: draft.word_count }) : '']
+                  .filter(Boolean).join(t('common.listSep'))}
               </p>
-              <p className="muted">
-                {t('dr.by', { name: String(draft.reviewed_by ?? '') })}
-                {draft.saved_at ? ` · ${t('dr.at', { time: formatTime(String(draft.saved_at), lang) })}` : ''}
-              </p>
+              <p className="muted">{t('dr.by', { name: String(draft.reviewed_by ?? '') })}</p>
+              {typeof draft.saved_at === 'string' && <p className="muted">{t('dr.at', { time: formatTime(String(draft.saved_at), lang) })}</p>}
               {details && typeof draft.possible_duplicate_of === 'string' && (
                 <p className="muted">{t('dr.like', { id: draft.possible_duplicate_of })}</p>
               )}

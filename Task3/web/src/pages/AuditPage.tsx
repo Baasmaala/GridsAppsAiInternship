@@ -36,7 +36,7 @@ export function AuditPage() {
   const event = (e: string) => (e === 'run' || e === 'approve' || e === 'reject' ? t(`event.${e}`) : e);
 
   return (
-    <Page title={t('au.title')} intro={t('au.intro')}
+    <Page title={t('au.title')}
       actions={<button type="button" className="btn btn-primary" onClick={check}>{t('au.verify')}</button>}>
       <ErrorNote error={lines.error ?? error} />
 
@@ -65,7 +65,7 @@ export function AuditPage() {
                   {m === 'ok' && <Icon name="check" size={14} />}
                   {m === 'broken' && <Icon name="cross" size={14} />} {line.seq}
                 </span>
-                <span className="mono muted">{formatTime(line.time, lang)}</span>
+                <span className="muted">{formatTime(line.time, lang)}</span>
                 <span>{event(line.event)}</span>
                 <span className="mono">{String(line.source_id)}</span>
                 <span>{details ? <span className="mono">{line.status}</span> : <StatusTag status={line.status} />}</span>

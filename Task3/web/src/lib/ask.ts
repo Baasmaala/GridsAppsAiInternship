@@ -42,4 +42,4 @@ export type AskSource = { run: string | null; lesson: string | null; station: st
 // "run" only goes in front of a real run id, not in front of "dry run" or "what-if dry run"
 const runPart = (run: string | null) => (run && /^[0-9a-f]{8}$/.test(run) ? `run ${run}` : run);
 
-export const sourceLine = (s: AskSource) => [runPart(s.run), s.lesson, s.station, s.mode].filter(Boolean).join(' · ');
+export const sourceLine = (s: AskSource) => [runPart(s.run), s.lesson, s.station, s.mode].filter(Boolean).join(', ');

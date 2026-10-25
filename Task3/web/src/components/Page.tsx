@@ -5,14 +5,14 @@ import { useLang } from '../i18n/lang';
 import { DetailsSwitch } from '../lib/details';
 
 export function Page({ title, intro, children, actions }: {
-  title: string; intro: string; children: ReactNode; actions?: ReactNode;
+  title: string; intro?: string; children: ReactNode; actions?: ReactNode;
 }) {
   return (
     <main className="wrap page">
       <div className="page-top">
         <div className="page-head">
           <h1>{title}</h1>
-          <p className="muted">{intro}</p>
+          {intro && <p className="muted">{intro}</p>}
         </div>
         <div className="page-actions">{actions}<DetailsSwitch /></div>
       </div>

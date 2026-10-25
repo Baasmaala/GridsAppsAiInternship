@@ -29,7 +29,7 @@ export function LabPage() {
 
   const passed = results?.filter(r => r.passed).length ?? 0;
   return (
-    <Page title={t('lab.title')} intro={t('lab.intro')}
+    <Page title={t('lab.title')}
       actions={<button type="button" className="btn btn-primary" onClick={runAll} disabled={busy}>
         {busy ? t('run.running') : t('lab.runAll')}</button>}>
       <ErrorNote error={error} />
