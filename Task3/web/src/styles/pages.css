@@ -131,6 +131,13 @@
 .slider-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .slider-row input[type="range"] { flex: 1; min-width: 160px; accent-color: var(--route); }
 .step-count { font-size: 13.5px; }
+/* phone: slider on its own line, back and next side by side under it */
+@media (max-width: 600px) {
+  .slider-row { display: grid; grid-template-columns: 1fr 1fr; }
+  .slider-row input[type="range"] { grid-column: 1 / -1; grid-row: 1; width: 100%; min-width: 0; }
+  .slider-row .btn { justify-content: center; }
+  .slider-row .step-count { grid-column: 1 / -1; }
+}
 .step-head { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 14px; }
 
 /* ---------- review inbox ---------- */

@@ -20,7 +20,8 @@ export function Header({ page, onAsk, asking }: { page: PageId; onAsk: () => voi
   return (
     <header className="header">
       <div className="wrap header-row">
-        <a className="brand" href="#/overview">
+        {/* the logo is the same in both languages, it never flips with rtl */}
+        <a className="brand" href="#/overview" dir="ltr">
           <MasarMark size={40} />
           <span className="brand-name">Masar</span>
           <span className="brand-ar" lang="ar">مسار</span>
