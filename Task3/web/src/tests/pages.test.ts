@@ -3,8 +3,8 @@ import { describe, expect, test } from 'vitest';
 import type { Item, ReviewItem, RunSummary, WorkflowNode } from '../api/client';
 import { en } from '../i18n/strings';
 import { overviewCounts } from '../lib/counts';
-import { diffFields } from '../lib/diff';
-import { draftsFileWorkflow, sampleName, workflowName } from '../lib/names';
+import { diffFields, plainRows } from '../lib/diff';
+import { draftsFileWorkflow, itemTitle, sampleName, workflowName } from '../lib/names';
 import { canApprove, canReject } from '../lib/review';
 import { link, parseHash } from '../lib/route';
 import { arrived, ticksNeeded, trainStop } from '../lib/train';
@@ -105,5 +105,20 @@ describe('names and links', () => {
     expect(page).toBe('replay');
     expect([params.get('run'), params.get('i')]).toEqual(['abc', '2']);
     expect(parseHash('').page).toBe('');
+  });
+});
+
+describe('plain words first', () => {
+  test('a lesson shows its title, the id only when there is no title', () => {
+    const trace = (input: unknown) => [{ input }];
+    expect(itemTitle({ source_id: 'DOR-1', trace: trace({ source_id: 'DOR-1', title: '  Present simple ' }) })).toBe('Present simple');
+    expect(itemTitle({ source_id: 'Q-1', trace: trace({ question: 'Which word?' }) })).toBe('Which word?');
+    expect(itemTitle({ source_id: 'DOR-2', trace: trace({ title: '   ' }) })).toBe('DOR-2');
+    expect(itemTitle({ source_id: 'DOR-3', trace: [] })).toBe('DOR-3');
+  });
+
+  test('ids, slug and status are hidden from before and after', () => {
+    const rows = diffFields({ source_id: 'a', title: 'x', status: 's' }, { source_id: 'a', title: 'x', slug: 'x' }) ?? [];
+    expect(plainRows(rows).map(r => r.key)).toEqual(['title']);
   });
 });

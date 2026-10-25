@@ -6,9 +6,11 @@ import { MiniLine } from '../components/MiniLine';
 import { ErrorNote, Page } from '../components/Page';
 import { StatusTag } from '../components/StatusTag';
 import { useLang } from '../i18n/lang';
+import { useDetails } from '../lib/details';
 import { useLastRun } from '../lib/lastRun';
-import { sampleName, workflowName } from '../lib/names';
+import { itemTitle, sampleName, workflowName } from '../lib/names';
 import { link } from '../lib/route';
+import { skipReason } from '../lib/skip';
 import { statusLook } from '../lib/status';
 import { arrived, ticksNeeded, trainStop } from '../lib/train';
 import { useLoad } from '../lib/useLoad';
@@ -24,6 +26,7 @@ const uploadName = (file: string) =>
 
 export function RunStudioPage() {
   const { t } = useLang();
+  const details = useDetails();
   const { setLast } = useLastRun();
   const workflows = useLoad(() => api.workflows());
   const samples = useLoad(() => api.samples());
@@ -160,15 +163,21 @@ export function RunStudioPage() {
               const done = arrived(item, tick);
               const look = statusLook(item.status);
               const stop = trainStop(item, result.nodes, tick);
+              const skip = skipReason(item);
               const replay = link('replay', { run: report.mode === 'dry-run' ? 'dry' : report.run_id, i: String(i) });
               return (
                 <li key={i} className="lesson">
-                  <span className="lesson-id mono">{String(item.source_id)}</span>
+                  <span className={`lesson-id${details ? ' mono' : ''}`} dir="auto">
+                    {details ? String(item.source_id) : itemTitle(item)}
+                  </span>
                   <MiniLine nodes={result.nodes} stop={stop} color={done ? look.color : 'var(--ink)'}
                     label={`${String(item.source_id)}: ${item.status}`} />
                   <span className="lesson-status">{done && <StatusTag status={item.status} />}</span>
                   <span className="lesson-words muted">{item.word_count ?? ''}</span>
-                  <span className="lesson-error" dir="auto">{done && item.error}</span>
+                  <span className="lesson-error" dir="auto">
+                    {done && item.error}
+                    {done && skip && <span className="muted">{t(skip)}</span>}
+                  </span>
                   <span className="lesson-links">
                     <a href={replay}>{t('run.toReplay')}</a>
                     {done && report.mode !== 'dry-run' && WAITING.includes(item.status) && (

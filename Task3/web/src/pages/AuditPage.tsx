@@ -5,11 +5,13 @@ import { Icon } from '../components/Icon';
 import { Empty, ErrorNote, Page } from '../components/Page';
 import { StatusTag } from '../components/StatusTag';
 import { useLang } from '../i18n/lang';
+import { useDetails } from '../lib/details';
 import { formatTime } from '../lib/time';
 import { useLoad } from '../lib/useLoad';
 
 export function AuditPage() {
   const { t, lang } = useLang();
+  const details = useDetails();
   const lines = useLoad(() => api.audit());
   const [verify, setVerify] = useState<Verify | null>(null);
   const [error, setError] = useState<ApiError | null>(null);
@@ -49,11 +51,11 @@ export function AuditPage() {
 
       {lines.data?.length === 0 && <Empty>{t('au.empty')}</Empty>}
       {lines.data && lines.data.length > 0 && (
-        <section className="card audit">
+        <section className={`card audit${details ? '' : ' no-hash'}`}>
           <div className="audit-row audit-head" role="row">
             <span>{t('au.seq')}</span><span>{t('au.time')}</span><span>{t('au.event')}</span>
             <span>{t('au.lesson')}</span><span>{t('au.status')}</span><span>{t('au.reviewer')}</span>
-            <span>{t('au.reason')}</span><span>{t('au.hash')}</span>
+            <span>{t('au.reason')}</span>{details && <span>{t('au.hash')}</span>}
           </div>
           {lines.data.map(line => {
             const m = mark(line.seq);
@@ -66,10 +68,10 @@ export function AuditPage() {
                 <span className="mono muted">{formatTime(line.time, lang)}</span>
                 <span>{event(line.event)}</span>
                 <span className="mono">{String(line.source_id)}</span>
-                <span><StatusTag status={line.status} /></span>
+                <span>{details ? <span className="mono">{line.status}</span> : <StatusTag status={line.status} />}</span>
                 <span>{line.reviewer ?? ''}</span>
                 <span dir="auto">{line.reason ?? ''}</span>
-                <span className="mono muted" title={line.hash}>{line.hash.slice(0, 10)}</span>
+                {details && <span className="mono muted" title={line.hash}>{line.hash.slice(0, 10)}</span>}
               </div>
             );
           })}

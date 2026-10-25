@@ -127,14 +127,18 @@ uv run python tools/challenges.py     # the 5 workshop challenges
 
 ## 6. Start the web app
 
-The easy way, from the `Task3` folder:
+The easiest way: double-click **`start.bat`** in the `Task3` folder (after step 3).
+
+It opens the backend in a second window, waits until it answers, starts the website and opens it in
+your browser. To stop, close both windows (or press Ctrl+C in each).
+
+The same thing from PowerShell, in the `Task3` folder (add `-Open` to also open the browser):
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File tools\dev.ps1
 ```
 
-It opens the backend in a second window and starts the web app in this one. Or do it by hand in
-two PowerShell windows:
+Or do it by hand in two PowerShell windows:
 
 ```powershell
 # window 1, in Task3

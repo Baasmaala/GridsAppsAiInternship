@@ -4,6 +4,7 @@ import { api, type WorkflowDetail, type WorkflowNode, type WorkflowSummary } fro
 import { Badge } from '../components/StatusTag';
 import { Icon } from '../components/Icon';
 import { useLang } from '../i18n/lang';
+import { DetailsSwitch, useDetails } from '../lib/details';
 import { en, type Key } from '../i18n/strings';
 
 const TRIGGER: WorkflowNode = { id: 'trigger', type: 'trigger' };
@@ -44,6 +45,7 @@ function StationDot({ kind, selected }: { kind: 'start' | 'stop' | 'gate'; selec
 
 export function WorkflowPage() {
   const { t } = useLang();
+  const details = useDetails();
   const [list, setList] = useState<WorkflowSummary[] | null>(null);
   const [key, setKey] = useState('dorosak_lessons');
   const [detail, setDetail] = useState<WorkflowDetail | null>(null);
@@ -77,9 +79,12 @@ export function WorkflowPage() {
 
   return (
     <main className="wrap page">
-      <div className="page-head">
-        <h1>{t('wf.title')}</h1>
-        <p className="muted">{t('wf.intro')}</p>
+      <div className="page-top">
+        <div className="page-head">
+          <h1>{t('wf.title')}</h1>
+          <p className="muted">{t('wf.intro')}</p>
+        </div>
+        <div className="page-actions"><DetailsSwitch /></div>
       </div>
 
       {failed && <div className="card notice" role="alert">{t('common.noApi')}</div>}
@@ -106,7 +111,7 @@ export function WorkflowPage() {
             ) : (
               <Badge color="var(--fail)">{t('wf.refusedBadge')} · {t('wf.problems', { n: detail.errors.length })}</Badge>
             )}
-            {detail.id && <span className="mono">{detail.id}{detail.version ? ` ${detail.version}` : ''}</span>}
+            {details && detail.id && <span className="mono">{detail.id}{detail.version ? ` ${detail.version}` : ''}</span>}
             {detail.allowed_languages && (
               <span className="muted">
                 {t(detail.allowed_languages.length === 1 ? 'wf.language' : 'wf.languages',
@@ -127,9 +132,8 @@ export function WorkflowPage() {
                         onClick={() => setStation(selected ? null : node)}>
                         <StationDot kind={kind} selected={selected} />
                         <span className="station-name">{stationLabel(node)}</span>
-                        <span className={node === TRIGGER ? 'station-sub' : 'station-type'}>
-                          {node === TRIGGER ? t('wf.triggerType') : node.type}
-                        </span>
+                        {node === TRIGGER ? <span className="station-sub">{t('wf.triggerType')}</span>
+                          : details && <span className="station-type">{node.type}</span>}
                         {kind === 'gate' && (
                           <span className="gate-note"><Icon name="pause" size={12} />{t('wf.gate')}</span>
                         )}
@@ -156,7 +160,7 @@ export function WorkflowPage() {
             </div>
           )}
 
-          {detail.mermaid && (
+          {details && detail.mermaid && (
             <details className="source">
               <summary>{t('wf.mermaid')}</summary>
               <pre className="json">{detail.mermaid}</pre>
@@ -171,6 +175,7 @@ export function WorkflowPage() {
 
 function StationDetail({ node, label }: { node: WorkflowNode; label: string }) {
   const { t } = useLang();
+  const details = useDetails();
   const isTrigger = node === TRIGGER;
   const checks = nodeKey(node.type, 'checks');
   const stops = nodeKey(node.type, 'stops');
@@ -178,12 +183,12 @@ function StationDetail({ node, label }: { node: WorkflowNode; label: string }) {
     <>
       <div>
         <h3>{label}</h3>
-        {!isTrigger && <span className="station-type">{node.id} · {node.type}</span>}
+        {details && !isTrigger && <span className="station-type">{node.id} · {node.type}</span>}
       </div>
       <dl>
         {checks && (<div><dt>{t('wf.checks')}</dt><dd>{t(checks)}</dd></div>)}
         {stops && (<div><dt>{t('wf.stops')}</dt><dd>{t(stops)}</dd></div>)}
-        {!isTrigger && (
+        {details && !isTrigger && (
           <div>
             <dt>{t('wf.node')}</dt>
             <dd><pre className="json">{JSON.stringify(node, null, 2)}</pre></dd>

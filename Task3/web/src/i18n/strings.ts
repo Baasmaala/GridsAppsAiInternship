@@ -244,6 +244,18 @@ export const en = {
   'ask.ex3': 'What happens if the level is 9A?',
   'ask.ex4': 'What does the duplicate check do?',
   'ask.note': 'Answers come from the run report and the trace. Ask Masar can read. It cannot approve, reject or save anything.',
+  'details.show': 'Show details',
+  'skip.saved': 'Already saved before',
+  'skip.earlier': 'Same lesson earlier in this file',
+  'start.title': 'Start here',
+  'start.1': 'Run some lessons',
+  'start.2': 'Approve one',
+  'start.3': 'See the saved draft',
+  'ib.loadSamples': 'Load 4 sample lessons',
+  'ib.allSaved': 'These 4 lessons are already saved as drafts.',
+  'ib.oldTitle': 'Title',
+  'ib.oldBy': 'Approved by',
+  'ib.oldAt': 'Saved',
 } as const;
 
 export type Key = keyof typeof en;
@@ -493,6 +505,18 @@ export const ar: Record<Key, string> = {
   'ask.ex3': 'ماذا يحدث لو كان المستوى 9A؟',
   'ask.ex4': 'ماذا يفعل فحص التكرار؟',
   'ask.note': 'الإجابات من تقرير التشغيل ومن التتبع. مسار يقرأ فقط. لا يمكنه الموافقة أو الرفض أو حفظ أي شيء.',
+  'details.show': 'إظهار التفاصيل',
+  'skip.saved': 'محفوظ من قبل',
+  'skip.earlier': 'نفس الدرس جاء قبله في هذا الملف',
+  'start.title': 'ابدأ من هنا',
+  'start.1': 'شغّل بعض الدروس',
+  'start.2': 'وافق على درس',
+  'start.3': 'شاهد المسودة المحفوظة',
+  'ib.loadSamples': 'حمّل 4 دروس للتجربة',
+  'ib.allSaved': 'هذه الدروس الأربعة محفوظة كمسودات من قبل.',
+  'ib.oldTitle': 'العنوان',
+  'ib.oldBy': 'وافق عليه',
+  'ib.oldAt': 'حُفظ',
 };
 
 export type Lang = 'en' | 'ar';

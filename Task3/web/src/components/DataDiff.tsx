@@ -1,10 +1,13 @@
-import { diffFields, show } from '../lib/diff';
+import { useDetails } from '../lib/details';
+import { diffFields, plainRows, show } from '../lib/diff';
 
 // two columns, field by field. changed, added and removed fields are marked.
 export function DataDiff({ before, after, beforeLabel, afterLabel, hideSame = false }: {
   before: unknown; after: unknown; beforeLabel: string; afterLabel: string; hideSame?: boolean;
 }) {
-  const rows = diffFields(before, after);
+  const details = useDetails();
+  const all = diffFields(before, after);
+  const rows = all && !details ? plainRows(all) : all;
   if (!rows) {
     return (
       <div className="diff-raw">

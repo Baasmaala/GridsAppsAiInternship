@@ -38,3 +38,13 @@ export function draftsFileWorkflow(file: string): string {
   const m = file.match(/^python_(.+)_drafts\.json$/);
   return m ? (BY_ID[m[1]] ?? m[1]) : file;
 }
+
+// the title a person wrote, from the first step that has one. the id only if there is none.
+export function itemTitle(item: { source_id: unknown; trace: { input: unknown }[] }): string {
+  for (const e of item.trace) {
+    const data = e.input as Record<string, unknown> | null;
+    const title = data && typeof data === 'object' ? data.title ?? data.question : undefined;
+    if (typeof title === 'string' && title.trim()) return title.trim();
+  }
+  return String(item.source_id);
+}

@@ -23,3 +23,10 @@ export function show(value: unknown): string {
   if (value === undefined) return '';
   return typeof value === 'string' ? value : JSON.stringify(value);
 }
+
+// fields for people who know the engine. hidden until "Show details" is on.
+export const TECH_FIELDS = ['source_id', 'slug', 'status', 'possible_duplicate_of'];
+
+export function plainRows(rows: DiffRow[]): DiffRow[] {
+  return rows.filter(r => !TECH_FIELDS.includes(r.key));
+}

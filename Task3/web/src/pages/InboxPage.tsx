@@ -3,10 +3,12 @@ import { useState } from 'react';
 import { api, ApiError, type ReviewItem } from '../api/client';
 import { DataDiff } from '../components/DataDiff';
 import { Icon } from '../components/Icon';
-import { Empty, ErrorNote, Page } from '../components/Page';
+import { ErrorNote, Page } from '../components/Page';
 import { StatusTag } from '../components/StatusTag';
 import { useLang } from '../i18n/lang';
+import { useDetails } from '../lib/details';
 import { workflowName } from '../lib/names';
+import { link } from '../lib/route';
 import { canApprove, canReject } from '../lib/review';
 import { formatTime, shortId } from '../lib/time';
 import { useLoad } from '../lib/useLoad';
@@ -60,7 +62,7 @@ export function InboxPage() {
       )}
 
       <ErrorNote error={inbox.error} />
-      {inbox.data?.length === 0 && <Empty>{t('ib.empty')}</Empty>}
+      {inbox.data?.length === 0 && <LoadSamples onDone={inbox.reload} />}
       {inbox.data?.map(item => (
         <ReviewCard key={`${item.run_id}/${item.source_id}`} item={item} name={name} onDone={finished} />
       ))}
@@ -68,8 +70,46 @@ export function InboxPage() {
   );
 }
 
+// the same run as the seed in "Reset demo", but nothing is deleted first
+function LoadSamples({ onDone }: { onDone: () => void }) {
+  const { t } = useLang();
+  const [busy, setBusy] = useState(false);
+  const [allSaved, setAllSaved] = useState(false);
+  const [error, setError] = useState<ApiError | null>(null);
+
+  async function load() {
+    setBusy(true);
+    setError(null);
+    try {
+      const r = await api.run({ workflow: 'dorosak_lessons', sample: 'lessons_good', dry_run: false });
+      // lessons that are already drafts get skipped, so maybe nothing new waits
+      const waiting = (r.summary.review_pending ?? 0) + (r.summary.possible_duplicate ?? 0);
+      if (waiting === 0) setAllSaved(true);
+      else onDone();
+    } catch (e) {
+      setError(e as ApiError);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <section className="card pad empty-inbox">
+      <p>{t('ib.empty')}</p>
+      <div className="buttons">
+        <button type="button" className="btn btn-primary" onClick={load} disabled={busy}>
+          {busy ? t('run.running') : t('ib.loadSamples')}
+        </button>
+      </div>
+      {allSaved && <p className="hint">{t('ib.allSaved')} <a href={link('drafts')}>{t('nav.drafts')}</a></p>}
+      <ErrorNote error={error} />
+    </section>
+  );
+}
+
 function ReviewCard({ item, name, onDone }: { item: ReviewItem; name: string; onDone: (line: string) => void }) {
   const { t, lang } = useLang();
+  const details = useDetails();
   const [rejecting, setRejecting] = useState(false);
   const [reason, setReason] = useState('');
   const [busy, setBusy] = useState(false);
@@ -98,10 +138,11 @@ function ReviewCard({ item, name, onDone }: { item: ReviewItem; name: string; on
       <div className="meta">
         <h2 dir="auto">{title}</h2>
         <StatusTag status={item.status} />
-        <span className="mono muted">{item.source_id}</span>
+        {details && <span className="mono muted">{item.source_id}</span>}
         <span className="muted">{workflowName(item.workflow_id, t)}</span>
         {typeof item.word_count === 'number' && <span className="muted">{t('ib.words', { n: item.word_count })}</span>}
-        <span className="mono muted">{t('ib.run', { id: shortId(item.run_id) })} · {formatTime(item.created_at, lang)}</span>
+        <span className="muted">{formatTime(item.created_at, lang)}</span>
+        {details && <span className="mono muted">{t('ib.run', { id: shortId(item.run_id) })}</span>}
       </div>
 
       <div className="pad">
@@ -115,10 +156,12 @@ function ReviewCard({ item, name, onDone }: { item: ReviewItem; name: string; on
             <>
               <p><Icon name="dot" /> {t('ib.lookalike', { id: item.possible_duplicate_of })}</p>
               <dl className="old-draft">
-                <dt>title</dt><dd dir="auto">{String(item.old_draft.title ?? item.old_draft.question ?? '')}</dd>
-                <dt>status</dt><dd>{String(item.old_draft.status)}</dd>
-                <dt>reviewed_by</dt><dd>{String(item.old_draft.reviewed_by ?? '')}</dd>
-                <dt>saved_at</dt><dd>{item.old_draft.saved_at ? formatTime(String(item.old_draft.saved_at), lang) : ''}</dd>
+                <dt>{details ? 'title' : t('ib.oldTitle')}</dt>
+                <dd dir="auto">{String(item.old_draft.title ?? item.old_draft.question ?? '')}</dd>
+                {details && <><dt>status</dt><dd>{String(item.old_draft.status)}</dd></>}
+                <dt>{details ? 'reviewed_by' : t('ib.oldBy')}</dt><dd>{String(item.old_draft.reviewed_by ?? '')}</dd>
+                <dt>{details ? 'saved_at' : t('ib.oldAt')}</dt>
+                <dd>{item.old_draft.saved_at ? formatTime(String(item.old_draft.saved_at), lang) : ''}</dd>
               </dl>
             </>
           ) : (

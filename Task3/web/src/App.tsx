@@ -4,6 +4,7 @@ import { AskPanel } from './components/AskPanel';
 import { Header, PAGES, type PageId } from './components/Header';
 import { LangProvider } from './i18n/lang';
 import { askContext } from './lib/ask';
+import { DetailsProvider } from './lib/details';
 import { LastRunProvider, useLastRun } from './lib/lastRun';
 import { parseHash } from './lib/route';
 import { AuditPage } from './pages/AuditPage';
@@ -25,9 +26,11 @@ function current(): { page: PageId; params: URLSearchParams } {
 export function App() {
   return (
     <LangProvider>
-      <LastRunProvider>
-        <Shell />
-      </LastRunProvider>
+      <DetailsProvider>
+        <LastRunProvider>
+          <Shell />
+        </LastRunProvider>
+      </DetailsProvider>
     </LangProvider>
   );
 }

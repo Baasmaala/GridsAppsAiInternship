@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react';
 
-import { api, type Report, type TraceEntry } from '../api/client';
+import { api, type Item, type Report, type TraceEntry } from '../api/client';
 import { DataDiff } from '../components/DataDiff';
 import { Icon } from '../components/Icon';
 import { Empty, ErrorNote, Page } from '../components/Page';
 import { Badge, StatusTag } from '../components/StatusTag';
 import { useLang } from '../i18n/lang';
+import { useDetails } from '../lib/details';
 import { useLastRun } from '../lib/lastRun';
-import { modeName, stationName, workflowName } from '../lib/names';
+import { itemTitle, modeName, stationName, workflowName } from '../lib/names';
 import { link } from '../lib/route';
+import { skipReason } from '../lib/skip';
 import { statusLook } from '../lib/status';
 import { formatTime, shortId } from '../lib/time';
 import { useLoad } from '../lib/useLoad';
@@ -23,6 +25,7 @@ function resultColor(entry: TraceEntry): string {
 
 export function ReplayPage({ params }: { params: URLSearchParams }) {
   const { t, lang } = useLang();
+  const details = useDetails();
   const { last } = useLastRun();
   const runs = useLoad(() => api.runs());
 
@@ -41,6 +44,11 @@ export function ReplayPage({ params }: { params: URLSearchParams }) {
   const go = (run: string, i: number) => { window.location.hash = link('replay', { run, i: String(i) }); };
 
   const noRuns = !last && runs.data?.length === 0;
+  const skip = item ? skipReason(item) : null;
+  const plainOption = (it: Item) => {
+    const word = statusLook(it.status).word;
+    return `${itemTitle(it)} (${word ? t(word) : it.status})`;
+  };
   const entry = item?.trace[Math.min(step, item.trace.length - 1)];
 
   return (
@@ -57,7 +65,8 @@ export function ReplayPage({ params }: { params: URLSearchParams }) {
                 {last && <option value={DRY}>{t('rp.lastDry')}</option>}
                 {[...(runs.data ?? [])].reverse().map(r => (
                   <option key={r.run_id} value={r.run_id}>
-                    {formatTime(r.created_at, lang)} · {workflowName(r.workflow_id, t)} · {modeName(r.mode, t)} · {shortId(r.run_id)}
+                    {formatTime(r.created_at, lang)} · {workflowName(r.workflow_id, t)} · {modeName(r.mode, t)}
+                    {details && ` · ${shortId(r.run_id)}`}
                   </option>
                 ))}
               </select>
@@ -67,7 +76,7 @@ export function ReplayPage({ params }: { params: URLSearchParams }) {
                 <span>{t('rp.lesson')}</span>
                 <select value={index} onChange={e => go(runId ?? DRY, Number(e.target.value))}>
                   {report.items.map((it, i) => (
-                    <option key={i} value={i}>{String(it.source_id)} · {it.status}</option>
+                    <option key={i} value={i}>{details ? `${String(it.source_id)} · ${it.status}` : plainOption(it)}</option>
                   ))}
                 </select>
               </label>
@@ -79,8 +88,9 @@ export function ReplayPage({ params }: { params: URLSearchParams }) {
       {item && entry && (
         <section className="card">
           <div className="meta">
-            <h2 className="mono-title">{String(item.source_id)}</h2>
-            <StatusTag status={item.status} raw />
+            {details ? <h2 className="mono-title">{String(item.source_id)}</h2> : <h2 dir="auto">{itemTitle(item)}</h2>}
+            <StatusTag status={item.status} raw={details} />
+            {skip && <span className="muted">{t(skip)}</span>}
             {item.word_count !== undefined && <span className="muted">{t('ib.words', { n: item.word_count })}</span>}
           </div>
 
@@ -114,10 +124,10 @@ export function ReplayPage({ params }: { params: URLSearchParams }) {
           <div className="detail">
             <div className="step-head">
               <h3>{stationName(entry.type, entry.node, t)}</h3>
-              <span className="station-type">{entry.node} · {entry.type}</span>
+              {details && <span className="station-type">{entry.node} · {entry.type}</span>}
               <Badge color={resultColor(entry)}>{t(`rp.result.${entry.result}`)}</Badge>
-              {entry.status && <StatusTag status={entry.status} raw />}
-              <span className="muted mono">{t('rp.ms', { ms: entry.ms })}</span>
+              {entry.status && <StatusTag status={entry.status} raw={details} />}
+              {details && <span className="muted mono">{t('rp.ms', { ms: entry.ms })}</span>}
             </div>
             {entry.note && <p dir="auto">{entry.note}</p>}
             {entry.error && <p className="error-text" dir="auto"><Icon name="cross" /> {entry.error}</p>}

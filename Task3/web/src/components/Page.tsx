@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 
 import type { ApiError } from '../api/client';
 import { useLang } from '../i18n/lang';
+import { DetailsSwitch } from '../lib/details';
 
 export function Page({ title, intro, children, actions }: {
   title: string; intro: string; children: ReactNode; actions?: ReactNode;
@@ -13,7 +14,7 @@ export function Page({ title, intro, children, actions }: {
           <h1>{title}</h1>
           <p className="muted">{intro}</p>
         </div>
-        {actions && <div className="page-actions">{actions}</div>}
+        <div className="page-actions">{actions}<DetailsSwitch /></div>
       </div>
       {children}
     </main>

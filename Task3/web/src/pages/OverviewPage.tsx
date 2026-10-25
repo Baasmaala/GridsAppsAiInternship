@@ -6,6 +6,7 @@ import { ErrorNote, Page } from '../components/Page';
 import { Badge, StatusTag } from '../components/StatusTag';
 import { useLang } from '../i18n/lang';
 import { overviewCounts } from '../lib/counts';
+import { useDetails } from '../lib/details';
 import { modeName, workflowName } from '../lib/names';
 import { link } from '../lib/route';
 import { formatTime, shortId } from '../lib/time';
@@ -13,6 +14,7 @@ import { useLoad } from '../lib/useLoad';
 
 export function OverviewPage() {
   const { t, lang } = useLang();
+  const details = useDetails();
   const data = useLoad(async () => {
     const [runs, reviews, drafts, verify] = await Promise.all([api.runs(), api.reviews(), api.drafts(), api.verify()]);
     return { runs, counts: overviewCounts(runs, reviews, drafts.length), verify };
@@ -29,6 +31,7 @@ export function OverviewPage() {
   return (
     <Page title={t('ov.title')} intro={t('ov.intro')}>
       <ErrorNote error={data.error} />
+      <StartHere />
       {data.data && (
         <>
           <div className="tiles">
@@ -49,7 +52,7 @@ export function OverviewPage() {
                     <li key={r.run_id} className="row">
                       <div className="row-main">
                         <span>{workflowName(r.workflow_id, t)} · {modeName(r.mode, t)}</span>
-                        <span className="mono muted">{formatTime(r.created_at, lang)} · {shortId(r.run_id)}</span>
+                        <span className="muted">{formatTime(r.created_at, lang)}{details && <span className="mono"> {shortId(r.run_id)}</span>}</span>
                       </div>
                       <div className="row-tags">
                         {Object.entries(r.summary).map(([s, n]) => (
@@ -83,6 +86,28 @@ export function OverviewPage() {
         </>
       )}
     </Page>
+  );
+}
+
+function StartHere() {
+  const { t } = useLang();
+  const steps = [
+    { text: t('start.1'), href: link('run') },
+    { text: t('start.2'), href: link('inbox') },
+    { text: t('start.3'), href: link('drafts') },
+  ];
+  return (
+    <section className="card pad start-here" aria-labelledby="start-title">
+      <h2 id="start-title" className="card-title flush">{t('start.title')}</h2>
+      <ol className="start-steps">
+        {steps.map((s, i) => (
+          <li key={i}>
+            <span className="start-n">{i + 1}</span>
+            <a href={s.href}>{s.text}</a>
+          </li>
+        ))}
+      </ol>
+    </section>
   );
 }
 
